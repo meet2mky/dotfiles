@@ -1,0 +1,27 @@
+{
+    "[shellscript]": {
+        "editor.defaultFormatter": "google.geminicodeassist"
+    },
+    "geminicodeassist.project": "",
+    "go.delveConfig": {
+        "dlvFlags": [
+            "--check-go-version=false"
+        ]
+    },
+    "files.autoSave": "afterDelay",
+    "diffEditor.codeLens": true,
+    "remote.autoForwardPorts": false,
+    "workbench.settings.applyToAllProfiles": [
+        
+    ],
+    "go.toolsManagement.autoUpdate": true,
+    "terminal.integrated.profiles.linux": {
+        "zsh": {
+            "path": "/usr/bin/zsh"
+        }
+    },
+    "remote.SSH.connectTimeout": 30,
+    "terminal.integrated.defaultProfile.osx": "zsh",
+    "terminal.integrated.defaultProfile.linux": "zsh",
+    "terminal.integrated.enablePersistentSessions": false
+}

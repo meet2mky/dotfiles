@@ -1,0 +1,208 @@
+// See https://go.microsoft.com/fwlink/?LinkId=733558
+// for the documentation about the tasks.json format
+// Extension: https://marketplace.visualstudio.com/items?itemName=actboy168.tasks
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Comment Script",
+            "type": "shell",
+            "command": "sed -i 's/containerd.io docker-buildx-plugin docker-compose-plugin/containerd.io # docker-buildx-plugin docker-compose-plugin/' ${cwd}/tools/integration_tests/emulator_tests/emulator_tests.sh",
+            "dependsOn": ["Build and Install GCSFuse"]
+        },
+        {
+            "label": "All Emulator Tests",
+            "type": "shell",
+            "command": "${cwd}/tools/integration_tests/emulator_tests/emulator_tests.sh true",
+ 
+            "dependsOn": ["Comment Script"]
+        },
+        {
+            "label": "Run All Emulator Packages",
+            "type": "shell",
+            "command": "sed -i 's/containerd.io # docker-buildx-plugin docker-compose-plugin/containerd.io docker-buildx-plugin docker-compose-plugin/' ${cwd}/tools/integration_tests/emulator_tests/emulator_tests.sh",
+            "dependsOn": ["All Emulator Tests"],
+            "options": {
+                "statusbar": {
+                    "hide": false,
+                    "color": "#13e808",
+                    "icon": {
+                        "id": "run-all"
+                    }
+                }
+            }
+        },
+        {
+            "label": "Run Proxy Server",
+            "type": "shell",
+            "command": "go run  ./tools/integration_tests/emulator_tests/proxy_server/. --config-path=tools/integration_tests/emulator_tests/proxy_server/configs/${input:proxy_sever_config_file}",
+            "dependsOn" : ["Start storage testbench server"],
+            "options": {
+                "statusbar": {
+                    "enabled": true,
+                    "color": "#13e808",
+                    "icon": {
+                        "id": "play"
+                    }
+                }
+            }
+  
+        },
+        {
+            "label": "Build and Debug Fuse",
+            "type": "shell",
+            "command": "dlv exec ./gcsfuse --headless --listen=:2345 --api-version=2 -- --log-severity=trace --custom-endpoint='http://localhost:8020/storage/v1/b?project=test-project' --foreground streaming-writes-it $HOME/mountedDir",
+            "dependsOn" : ["Build Debug Binary"],
+            "options": {
+                "statusbar": {
+                    "color": "#13e808",
+                    "icon": {
+                        "id": "debug-alt"
+                    }
+                }
+            }
+        },
+        {
+            "label": "[EMULATOR] Run a test",
+            "type": "shell",
+            "command": "go test ./tools/integration_tests/emulator_tests/streaming_writes_failure/... -p 1 -short --integrationTest -v --testbucket=test-bucket --mountedDirectory=/usr/local/google/home/mohitkyadav/mountedDirr --testOnCustomEndpoint=http://localhost:8020 -timeout 10m  -run '${input:TestSuite}/${input:TestName}|${input:TestName}'",
+            "options": {
+                "statusbar": {
+                    "hide": false,
+                    "color": "#13e808",
+                    "icon": {
+                        "id": "run-all"
+                    }
+                }
+            }
+        },
+        {
+            "label": "[PACKAGE] IT",
+            "type": "shell",
+            "command": "GODEBUG=asyncpreemptoff=1 CGO_ENABLED=0  go test ./tools/integration_tests/${input:TestPackage}/... -p 1 -v --integrationTest --testInstalledPackage=true --testbucket=${input:TestBucket} --timeout 60m",
+            "options": {
+                "statusbar": {
+                    "hide": false,
+                    "color": "#13e808",
+                    "icon": {
+                        "id": "run-all"
+                    }
+                }
+            }
+        },
+        {
+            "label": "[SINGLE] IT",
+            "type": "shell",
+            "command": "GODEBUG=asyncpreemptoff=1 CGO_ENABLED=0  go test ./tools/integration_tests/${input:TestPackage}/... -p 1 -v --integrationTest --testInstalledPackage=true --testbucket=${input:TestBucket} --timeout 60m -run '${input:TestName}'",
+            "options": {
+                "statusbar": {
+                    "hide": false,
+                    "color": "#13e808",
+                    "icon": {
+                        "id": "run-all"
+                    }
+                }
+            },
+        },
+        {
+            "label": "Build and Install GCSFuse",
+            "type": "shell",
+            "command": "go build && go install .",
+            "options": {
+                "statusbar": {
+                    "hide": false,
+                    "color": "#13e808",
+                    "icon": {
+                        "id": "cloud-download"
+                    }
+                }
+            }
+        },
+        {
+            "label": "Create Mounted Dir",
+            "type": "shell",
+            "command": "rm -rf $HOME/mountedDir && mkdir $HOME/mountedDir",
+            "options": {
+                "statusbar": {
+                    "hide": true
+                }
+            }
+        },
+        {
+            "label": "Build Debug Binary",
+            "type": "shell",
+            "command": "go build -gcflags='all=-N -l'",
+            "dependsOn" : ["Create Mounted Dir"],
+            "options": {
+                "statusbar": {
+                    "hide": true
+                }
+            }
+        },
+        {
+            "label": "Unmount All Mounts",
+            "type": "shell",
+            "command": "mount | grep 'gcsfuse' | awk '{print $3}' | xargs -I{} fusermount -u {}",
+            "options": {
+                "statusbar": {
+                    "hide": false,
+                    "color": "#13e808",
+                    "icon": {
+                        "id": "close-all"
+                    }
+                }
+            }
+        },
+        {
+            "label": "Clean tmp from tests..",
+            "type": "shell",
+            "command": "sudo rm -rf /tmp/gcsfuse_readwrite_test* ; sudo rm -rf /tmp/go-build* ; sudo rm -rf /tmp/build_gcsfuse*",
+            "options": {
+                "statusbar": {
+                    "enabled": true,
+                    "color": "#13e808",
+                    "icon": {
+                        "id": "close-all"
+                    }
+                }
+            }
+        }
+    ],
+    "inputs": [
+        {
+          "id": "TestSuite",
+          "type": "promptString",
+          "description": "Test Suite name"
+        },
+        {
+            "id": "TestName",
+            "type": "promptString",
+            "description": "Test name"
+        },
+        {
+            "id": "TestBucket",
+            "type": "promptString",
+            "description": "Test Bucket",
+            "default": "meet2mky-non-hns-bucket"
+        },
+        {
+            "id": "TestPackage",
+            "type": "promptString",
+            "description": "Test Package",
+            "default": "streaming_writes"
+        },
+        {
+            "id": "testbenchscript",
+            "type": "promptString",
+            "description": "Script to start storage test bench server",
+            "default": "/usr/local/google/home/mohitkyadav/gcsfuse/tools/integration_tests/emulator_tests/emulator_tests.sh"
+        },
+        {
+            "id": "proxy_sever_config_file",
+            "type": "promptString",
+            "description": "Proxy server config file",
+            "default": "config.yaml"
+        }
+      ]
+  
+  }
