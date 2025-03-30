@@ -63,18 +63,17 @@ sudo mv "$GO_EXTRACT_DIR" "$GO_INSTALL_DIR"
 # Set environment variables
 echo "Setting environment variables..."
 
-# Add Go to PATH in /etc/profile
-echo "export PATH=$PATH:$GO_INSTALL_DIR/go/bin" | sudo tee -a /etc/profile > /dev/null
+# Add Go to PATH in ~/.zshrc
+echo "export PATH=$PATH:$GO_INSTALL_DIR/go/bin" >> ~/.zshrc
 
-# Source /etc/profile so the changes take effect immediately (for this shell)
-source /etc/profile
+echo "Cleaning up downloaded files..."
+rm "$GO_FILENAME"
+
+# Exec ZSH for changes to take effect.
+exec zsh
 
 # Verify installation
 echo "Verifying installation..."
 go version
 
 echo "Go version $GO_VERSION installed successfully."
-
-# Cleanup downloaded file
-echo "Cleaning up downloaded files..."
-rm "$GO_FILENAME"
