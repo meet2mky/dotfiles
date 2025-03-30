@@ -74,7 +74,7 @@ func main() {
 		fmt.Printf("Error getting home directory: %v\n", err)
 		return
 	}
-	extensionsFile := filepath.Join(homeDir, "dotfiles", "code_extensions")
+	extensionsFile := filepath.Join(homeDir, "dotfiles", "vscode", "vscode_extensions")
 
 	// Read the list of desired VS Code extensions from the file.
 	codeExtensions, err := readFileLines(extensionsFile)
