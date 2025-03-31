@@ -64,16 +64,25 @@ sudo mv "$GO_EXTRACT_DIR" "$GO_INSTALL_DIR"
 echo "Setting environment variables..."
 
 # Add Go to PATH in ~/.zshrc
-echo "export PATH=$PATH:$GO_INSTALL_DIR/go/bin" >> ~/.zshrc
+ZSHRC="$HOME/.zshrc"
 
-echo "Cleaning up downloaded files..."
-rm "$GO_FILENAME"
+GO_PATH_LINE="export PATH=\"\$PATH:$GO_INSTALL_DIR/go/bin\""
+BEGIN_MARKER="# --- BEGIN GO PATH ---"
+END_MARKER="# --- END GO PATH ---"
 
-# Exec ZSH for changes to take effect.
-exec zsh
+# Check if the markers are already present to avoid duplicates
+if grep -q "$BEGIN_MARKER" "$ZSHRC"; then
+  echo "Go PATH management already present in $ZSHRC."
+  exit 1
+else
+  echo "Adding Go PATH to $ZSHRC..."
+  cat <<EOF >> "$ZSHRC"
+$BEGIN_MARKER
+$GO_PATH_LINE
+$END_MARKER
+EOF
+  echo "Go PATH added to $ZSHRC. You might need to source it (exec zsh) or open a new terminal."
+fi
 
-# Verify installation
-echo "Verifying installation..."
-go version
-
-echo "Go version $GO_VERSION installed successfully."
+echo "Removing downloaded files.."
+rm $GO_FILENAME

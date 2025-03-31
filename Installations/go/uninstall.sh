@@ -43,4 +43,24 @@ if [[ -d "$HOME/go" ]]; then
   rm -rf "$HOME/go"
 fi
 
+# Removing the PATH for go.
+HOME=$(getent passwd "$USER" | cut -d: -f6)
+if [ -z "$HOME" ]; then
+  echo "Error: Could not determine the user's home directory."
+  exit 1
+fi
+ZSHRC="$HOME/.zshrc"
+echo $ZSHRC
+BEGIN_MARKER="# --- BEGIN GO PATH ---"
+END_MARKER="# --- END GO PATH ---"
+
+if grep -q "$BEGIN_MARKER" "$ZSHRC"; then
+  echo "Removing Go PATH from $ZSHRC..."
+  # Use sed to remove the lines between the markers (inclusive)
+  sed -i "/$BEGIN_MARKER/,/$END_MARKER/d" "$ZSHRC"
+  echo "Go PATH removed from $ZSHRC. You might need to source it (exec zsh) or open a new terminal."
+else
+  echo "Go PATH markers not found in $ZSHRC. Assuming it was not managed by this script."
+fi
+
 echo "Go uninstallation complete."
