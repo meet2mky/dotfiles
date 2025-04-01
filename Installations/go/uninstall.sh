@@ -50,7 +50,6 @@ if [ -z "$HOME" ]; then
   exit 1
 fi
 ZSHRC="$HOME/.zshrc"
-echo $ZSHRC
 BEGIN_MARKER="# --- BEGIN GO PATH ---"
 END_MARKER="# --- END GO PATH ---"
 

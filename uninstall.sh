@@ -1,0 +1,1 @@
+bash Installations/go/uninstall.sh
