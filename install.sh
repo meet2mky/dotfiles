@@ -8,4 +8,6 @@ bash Installations/fuse/install.sh
 
 go run vscode/main.go
 
+bash monitor/install.sh
+
 exec zsh
