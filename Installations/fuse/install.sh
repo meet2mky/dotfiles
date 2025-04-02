@@ -10,7 +10,7 @@ if [[ "$(uname -s)" == "Linux" ]]; then
   if command -v apt >/dev/null 2>&1; then
     echo "Using apt package manager (Debian/Ubuntu based)."
     sudo apt update
-    sudo apt install -y fuse libfuse2 # or libfuse3 depending on your system
+    sudo apt install -y fuse
     if [ $? -eq 0 ]; then
       echo "FUSE and its library have been installed successfully."
     else

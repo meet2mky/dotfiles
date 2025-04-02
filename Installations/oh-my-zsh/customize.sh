@@ -7,5 +7,3 @@ echo "Setting the CASE_SENSITIVE completion to true..."
 
 sed -i 's/^# CASE_SENSITIVE="true"/CASE_SENSITIVE="true"/' "$HOME/.zshrc"
 sed -i 's/^CASE_SENSITIVE="false"/CASE_SENSITIVE="true"/' "$HOME/.zshrc"
-
-exec zsh
