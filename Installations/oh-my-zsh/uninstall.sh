@@ -1,1 +1,1 @@
-bash "$HOME/.oh-my-zsh/tools/uninstall.sh"
+echo "y" | bash "$HOME/.oh-my-zsh/tools/uninstall.sh"
