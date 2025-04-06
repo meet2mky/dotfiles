@@ -23,7 +23,7 @@ check_command() {
 
 execute_script() {
     if [ "$#" -eq 0 ]; then
-        log_error "Requires at least one argument." > &2
+        log_error "Requires at least one argument." >&2
         return 1
     fi
     
@@ -36,9 +36,9 @@ execute_script() {
     log_info "---------------------------------------------------------------------"
 
     if [ "$#" -gt 0 ]; then
-        bash $1 $@
+        bash $SCRIPT_PATH $@
     else
-        bash $1
+        bash $SCRIPT_PATH
     fi
     log_info "---------------------------------------------------------------------"
     log_info "---------------------------------------------------------------------"
@@ -62,8 +62,11 @@ log_info ""
 log_info "---------------------------------------------------------------------"
 log_info "Adding install script to $DIR_TO_INSTALL..."
 bash "$HOME/dotfiles/Installations/tools/remove_existing_symlink.sh" "$DIR_TO_INSTALL/$INSTALL_COMMAND_NAME"
-ln -s "$HOME/dotfiles/install.sh" "$DIR_TO_INSTALL/$INSTALL_COMMAND_NAME"
+sudo ln -s "$HOME/dotfiles/install.sh" "$DIR_TO_INSTALL/$INSTALL_COMMAND_NAME"
+sudo chmod +x "$HOME/dotfiles/install.sh"
+log_info "Symlink [$DIR_TO_INSTALL/$INSTALL_COMMAND_NAME] created successfully..."
 check_command "$INSTALL_COMMAND_NAME"
+log_info "Command [$INSTALL_COMMAND_NAME] is available to use"
 log_info "---------------------------------------------------------------------"
 log_info ""
 log_info ""
