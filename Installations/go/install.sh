@@ -119,20 +119,7 @@ fi
 
 # 6. Remove existing symlink if it exists (requires sudo)
 SYMLINK_PATH="${SYMLINK_DIR}/go"
-if [ -L "$SYMLINK_PATH" ]; then # Check if it's a symbolic link
-    log_info "Removing existing Go symlink at ${SYMLINK_PATH}..."
-    if sudo rm -f "$SYMLINK_PATH"; then
-        log_info "Previous symlink removed."
-    else
-        log_error "Failed to remove existing Go symlink. Check sudo permissions for ${SYMLINK_DIR}."
-        # cleanup_download runs automatically via trap EXIT
-        exit 1
-    fi
-elif [ -e "$SYMLINK_PATH" ]; then # Check if it exists but is not a symlink
-    log_error "A file or directory already exists at ${SYMLINK_PATH} and is not a symlink. Please remove it manually before running this script again."
-    # cleanup_download runs automatically via trap EXIT
-    exit 1
-fi
+bash "$HOME/dotfiles/Installations/tools/remove_existing_symlink.sh" "$SYMLINK_PATH"
 
 
 # 7. Extract the new Go archive to /usr/local (creates /usr/local/go) (requires sudo)
