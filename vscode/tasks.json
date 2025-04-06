@@ -7,20 +7,20 @@
         {
             "label": "Comment Script",
             "type": "shell",
-            "command": "sed -i 's/containerd.io docker-buildx-plugin docker-compose-plugin/containerd.io # docker-buildx-plugin docker-compose-plugin/' ${cwd}/tools/integration_tests/emulator_tests/emulator_tests.sh",
+            "command": "sed -i 's/containerd.io docker-buildx-plugin docker-compose-plugin/containerd.io # docker-buildx-plugin docker-compose-plugin/' tools/integration_tests/emulator_tests/emulator_tests.sh",
             "dependsOn": ["Build and Install GCSFuse"]
         },
         {
             "label": "All Emulator Tests",
             "type": "shell",
-            "command": "${cwd}/tools/integration_tests/emulator_tests/emulator_tests.sh true",
+            "command": "${workspaceFolder}/tools/integration_tests/emulator_tests/emulator_tests.sh true",
  
             "dependsOn": ["Comment Script"]
         },
         {
             "label": "Run All Emulator Packages",
             "type": "shell",
-            "command": "sed -i 's/containerd.io # docker-buildx-plugin docker-compose-plugin/containerd.io docker-buildx-plugin docker-compose-plugin/' ${cwd}/tools/integration_tests/emulator_tests/emulator_tests.sh",
+            "command": "sed -i 's/containerd.io # docker-buildx-plugin docker-compose-plugin/containerd.io docker-buildx-plugin docker-compose-plugin/' tools/integration_tests/emulator_tests/emulator_tests.sh",
             "dependsOn": ["All Emulator Tests"],
             "options": {
                 "statusbar": {
@@ -30,7 +30,7 @@
                         "id": "run-all"
                     }
                 }
-            }
+            },
         },
         {
             "label": "Run Proxy Server",
@@ -49,7 +49,7 @@
   
         },
         {
-            "label": "Build and Debug Fuse",
+            "label": "Build and Debug Fuse Emulator Tests",
             "type": "shell",
             "command": "dlv exec ./gcsfuse --headless --listen=:2345 --api-version=2 -- --log-severity=trace --custom-endpoint='http://localhost:8020/storage/v1/b?project=test-project' --foreground streaming-writes-it $HOME/mountedDir",
             "dependsOn" : ["Build Debug Binary"],
@@ -63,9 +63,23 @@
             }
         },
         {
+            "label": "Build in DBG & Mount",
+            "type": "shell",
+            "command": "dlv --check-go-version=false exec ./gcsfuse --headless --listen=:2345 --api-version=2 -- --log-severity=trace  --foreground ashmeen-zb $HOME/mountedDir",
+            "dependsOn" : ["Build Debug Binary"],
+            "options": {
+                "statusbar": {
+                    "color": "#13e808",
+                    "icon": {
+                        "id": "debug-alt"
+                    }
+                }
+            }
+        },
+        {
             "label": "[EMULATOR] Run a test",
             "type": "shell",
-            "command": "go test ./tools/integration_tests/emulator_tests/streaming_writes_failure/... -p 1 -short --integrationTest -v --testbucket=test-bucket --mountedDirectory=/usr/local/google/home/mohitkyadav/mountedDirr --testOnCustomEndpoint=http://localhost:8020 -timeout 10m  -run '${input:TestSuite}/${input:TestName}|${input:TestName}'",
+            "command": "go test ./tools/integration_tests/emulator_tests/streaming_writes_failure/... -p 1 -short --integrationTest -v --testbucket=test-bucket --mountedDirectory=/home/mohitkyadav_google_com/mountedDirr --testOnCustomEndpoint=http://localhost:8020 -timeout 10m  -run '${input:TestSuite}/${input:TestName}|${input:TestName}'",
             "options": {
                 "statusbar": {
                     "hide": false,
@@ -79,7 +93,7 @@
         {
             "label": "[PACKAGE] IT",
             "type": "shell",
-            "command": "GODEBUG=asyncpreemptoff=1 CGO_ENABLED=0  go test ./tools/integration_tests/${input:TestPackage}/... -p 1 -v --integrationTest --testInstalledPackage=true --testbucket=${input:TestBucket} --timeout 60m",
+            "command": "GODEBUG=asyncpreemptoff=1 CGO_ENABLED=0  go test ./tools/integration_tests/${input:TestPackage}/... -count=${input:Count} -v --integrationTest --zonal=${input:IsZonal} --testInstalledPackage=false --testbucket=${input:TestBucket} --timeout 60m",
             "options": {
                 "statusbar": {
                     "hide": false,
@@ -88,12 +102,12 @@
                         "id": "run-all"
                     }
                 }
-            }
+            },
         },
         {
             "label": "[SINGLE] IT",
             "type": "shell",
-            "command": "GODEBUG=asyncpreemptoff=1 CGO_ENABLED=0  go test ./tools/integration_tests/${input:TestPackage}/... -p 1 -v --integrationTest --testInstalledPackage=true --testbucket=${input:TestBucket} --timeout 60m -run '${input:TestName}'",
+            "command": "GODEBUG=asyncpreemptoff=1 CGO_ENABLED=0  go test ./tools/integration_tests/streaming_writes/... -count=1 -v --integrationTest --zonal=true --testbucket=ashmeen-zb --mountedDirectory=$HOME/mountedDir --timeout 60m -run '.*/TestReadFileSucceeds'",
             "options": {
                 "statusbar": {
                     "hide": false,
@@ -140,9 +154,9 @@
             }
         },
         {
-            "label": "Unmount All Mounts",
+            "label": "Abort All Fuse Mounts",
             "type": "shell",
-            "command": "mount | grep 'gcsfuse' | awk '{print $3}' | xargs -I{} fusermount -u {}",
+            "command": "for t in /sys/fs/fuse/connections/*/abort; do echo 1 > $t; done",
             "options": {
                 "statusbar": {
                     "hide": false,
@@ -156,7 +170,21 @@
         {
             "label": "Clean tmp from tests..",
             "type": "shell",
-            "command": "sudo rm -rf /tmp/gcsfuse_readwrite_test* ; sudo rm -rf /tmp/go-build* ; sudo rm -rf /tmp/build_gcsfuse*",
+            "command": "sudo rm -rf /tmp/gcsfuse_readwrite_test* ; sudo rm -rf /tmp/go-build* ; sudo rm -rf /tmp/build_gcsfuse* ; sudo rm -rf /tmp/fs_test*",
+            "options": {
+                "statusbar": {
+                    "enabled": true,
+                    "color": "#13e808",
+                    "icon": {
+                        "id": "close-all"
+                    }
+                }
+            }
+        },
+        {
+            "label": "Clean Bucket",
+            "type": "shell",
+            "command": "bash /usr/local/google/home/mohitkyadav/clean_bucket.sh ${input:TestBucket}",
             "options": {
                 "statusbar": {
                     "enabled": true,
@@ -180,16 +208,43 @@
             "description": "Test name"
         },
         {
+            "id": "IsZonal",
+            "type": "pickString",
+            "description": "Is Test run on Zonal Bucket",
+            "options": [
+                "true",
+                "false",
+            ],
+            "default": "false"
+        },
+        {
             "id": "TestBucket",
-            "type": "promptString",
+            "type": "pickString",
             "description": "Test Bucket",
-            "default": "meet2mky-non-hns-bucket"
+            "options": [
+                "meet2mky-hns",
+                "meet2mky-hns-2",
+                "meet2mky-hns-bucket",
+                "meet2mky-non-hns-bucket",
+                "zb-test-bucket2",
+                "ashmeen-zb",
+            ],
+            "default": "meet2mky-hns-2"
         },
         {
             "id": "TestPackage",
-            "type": "promptString",
+            "type": "pickString",
             "description": "Test Package",
-            "default": "streaming_writes"
+            "options": [
+                "read_cache",
+                "write_large_files",
+                "read_cache",
+                "local_file",
+                "streaming_writes",
+                "stale_handle",
+                "stale_handle_streaming_writes",
+            ],
+            "default": "stale_handle",
         },
         {
             "id": "testbenchscript",
@@ -202,6 +257,12 @@
             "type": "promptString",
             "description": "Proxy server config file",
             "default": "config.yaml"
+        },
+        {
+            "id": "Count",
+            "type": "promptString",
+            "description": "Count for number of times test to run",
+            "default": "1"
         }
       ]
   
