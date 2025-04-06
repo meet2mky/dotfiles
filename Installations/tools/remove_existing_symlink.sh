@@ -46,8 +46,7 @@ remove_existing_symlink() {
     # Check if the path exists and is specifically a symbolic link (-L)
     if [ -L "$symlink_path" ]; then
         log_info "Removing existing symlink at ${symlink_path}..."
-        # Attempt removal using sudo, -f suppresses errors if it doesn't exist (though -L already checked)
-        if sudo rm -f "$symlink_path"; then
+        if sudo rm "$symlink_path"; then
             log_info "Previous symlink removed successfully."
         else
             # Removal command failed (likely permissions)

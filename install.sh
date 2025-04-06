@@ -57,20 +57,9 @@ go run "vscode/main.go"
 
 execute_script "$HOME/dotfiles/monitor/install.sh"
 
-DIR_TO_INSTALL="/usr/local/bin"
-INSTALL_COMMAND_NAME="dotfiles_install"
-log_info ""
-log_info ""
-log_info "---------------------------------------------------------------------"
-log_info "Adding install script to $DIR_TO_INSTALL..."
-bash "$HOME/dotfiles/Installations/tools/remove_existing_symlink.sh" "$DIR_TO_INSTALL/$INSTALL_COMMAND_NAME"
-sudo ln -s "$HOME/dotfiles/install.sh" "$DIR_TO_INSTALL/$INSTALL_COMMAND_NAME"
-sudo chmod +x "$HOME/dotfiles/install.sh"
-log_info "Symlink [$DIR_TO_INSTALL/$INSTALL_COMMAND_NAME] created successfully..."
-check_command "$INSTALL_COMMAND_NAME"
-log_info "Command [$INSTALL_COMMAND_NAME] is available to use"
-log_info "---------------------------------------------------------------------"
-log_info ""
-log_info ""
+COMMAND_NAME="dotfiles_install"
+
+bash "$HOME/dotfiles/Installations/tools/add_script_to_executable.sh" "$HOME/dotfiles/install.sh" "dotfiles_install"
+bash "$HOME/dotfiles/Installations/tools/add_script_to_executable.sh" "$HOME/dotfiles/vscode/vscode_symlink_creator.sh" "dotfiles_vscode_symlink_creator"
 
 exec zsh

@@ -1,5 +1,12 @@
 #!/bin/bash
 
+# Exit immediately if a command exits with a non-zero status.
+set -e
+# Treat unset variables as an error when substituting.
+set -u
+# Pipe failures should cause the script to exit.
+set -o pipefail
+
 # ==============================================================================
 # Script: check_single_binary.sh
 # Description: Checks if exactly one executable version of a given binary
