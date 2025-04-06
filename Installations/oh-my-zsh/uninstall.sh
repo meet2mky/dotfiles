@@ -1,1 +1,0 @@
-echo "y" | bash "$HOME/.oh-my-zsh/tools/uninstall.sh"

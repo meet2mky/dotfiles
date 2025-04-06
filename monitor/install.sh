@@ -40,7 +40,8 @@ fi
 }
 
 # --- Main Execution ---
-
+echo "Removing existing monitor markers if present..."
+bash "$HOME/dotfiles/monitor/uninstall.sh"
 add_dotfile_monitor_to_zshrc
 
 exit 0
