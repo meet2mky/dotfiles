@@ -51,6 +51,7 @@ execute_script() {
 execute_script "$HOME/dotfiles/Installations/zsh/install.sh"
 execute_script "$HOME/dotfiles/Installations/go/install.sh" "1.24.0"
 execute_script "$HOME/dotfiles/Installations/fuse/install.sh"
+execute_script "$HOME/dotfiles/Installations/gcsfuse/install.sh"
 execute_script "$HOME/dotfiles/Installations/oh-my-zsh/install.sh"
 
 go run "$HOME/dotfiles/vscode/main.go"
