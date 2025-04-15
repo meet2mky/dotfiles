@@ -233,18 +233,14 @@
         },
         {
             "id": "TestPackage",
-            "type": "pickString",
-            "description": "Test Package",
-            "options": [
-                "read_cache",
-                "write_large_files",
-                "read_cache",
-                "local_file",
-                "streaming_writes",
-                "stale_handle",
-                "stale_handle_streaming_writes",
-            ],
-            "default": "stale_handle",
+            "type": "command",
+            "command": "shellCommand.execute",
+            "args": {
+                "command": "echo ${file} | tr '/' '\n' | grep -A 1 '^integration_tests$' | tail -n 1 | cat",
+                "description": "Returns the package of to which current ${file} is part of.",
+                "useFirstResult": true,
+            },
+
         },
         {
             "id": "testbenchscript",
