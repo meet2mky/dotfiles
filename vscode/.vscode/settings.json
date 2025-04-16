@@ -2,7 +2,7 @@
     "[shellscript]": {
         "editor.defaultFormatter": "google.geminicodeassist"
     },
-    "geminicodeassist.project": "",
+    "geminicodeassist.project": "aipp-internal-testing",
     "go.delveConfig": {
         "dlvFlags": [
             "--check-go-version=false"
