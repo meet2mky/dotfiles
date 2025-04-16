@@ -93,7 +93,7 @@
         {
             "label": "PACKAGE IT",
             "type": "shell",
-            "command": "GODEBUG=asyncpreemptoff=1 CGO_ENABLED=0  go test ./tools/integration_tests/${input:TestPackage}/... -count=${input:Count} -v --integrationTest --zonal=${input:IsZonal} --testInstalledPackage=false --testbucket=${input:TestBucket} --timeout 60m",
+            "command": "GODEBUG=asyncpreemptoff=1 CGO_ENABLED=0  go test ./tools/integration_tests/$ ... -count=${input:Count} -v --integrationTest --zonal=${input:IsZonal} --testInstalledPackage=false --testbucket=${input:TestBucket} --timeout 60m",
             "options": {
                 "statusbar": {
                     "hide": false,
@@ -217,6 +217,7 @@
             "type": "pickString",
             "description": "Test Bucket",
             "options": [
+                "mohitkyadav-zb-us-central1-a",
                 "meet2mky-hns",
                 "meet2mky-hns-2",
                 "meet2mky-hns-bucket",

@@ -23,5 +23,6 @@
     "remote.SSH.connectTimeout": 30,
     "terminal.integrated.defaultProfile.osx": "zsh",
     "terminal.integrated.defaultProfile.linux": "zsh",
-    "terminal.integrated.enablePersistentSessions": false
+    "terminal.integrated.enablePersistentSessions": false,
+    "git.ignoreLimitWarning": true
 }
