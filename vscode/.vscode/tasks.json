@@ -93,7 +93,7 @@
         {
             "label": "PACKAGE IT",
             "type": "shell",
-            "command": "GODEBUG=asyncpreemptoff=1 CGO_ENABLED=0  go test ./tools/integration_tests/$ ... -count=${input:Count} -v --integrationTest --zonal=${input:IsZonal} --testInstalledPackage=false --testbucket=${input:TestBucket} --timeout 60m",
+            "command": "GODEBUG=asyncpreemptoff=1 CGO_ENABLED=0  go test ./tools/integration_tests/${input:TestPackage}/... -count=1 -v --integrationTest --testInstalledPackage=false --testbucket=mohitkyadav-hns --timeout 60m",
             "options": {
                 "statusbar": {
                     "hide": false,
