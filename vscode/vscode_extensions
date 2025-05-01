@@ -1,5 +1,16 @@
-Extensions installed on SSH: mycloud:
+Extensions installed on SSH: mohitkyadav-c4-96.us-central1-c.gcs-fuse-test:
+766b.go-outliner
 actboy168.tasks
+augustocdias.tasks-shell-input
 eamodio.gitlens
+foxundermoon.shell-format
 golang.go
 google.geminicodeassist
+grapecity.gc-excelviewer
+mechatroner.rainbow-csv
+ms-python.black-formatter
+ms-python.debugpy
+ms-python.python
+ms-python.vscode-pylance
+oderwat.indent-rainbow
+timonwong.shellcheck
