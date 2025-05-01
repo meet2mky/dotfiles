@@ -33,7 +33,6 @@
                     }
                 }
             }
-  
         },
         {
             "label": "Build and Debug Fuse Emulator Tests",
@@ -135,7 +134,6 @@
                 }
             },
         },
-
         {
             "label": "Build and Install GCSFuse",
             "type": "shell",
@@ -216,9 +214,9 @@
     ],
     "inputs": [
         {
-          "id": "TestSuite",
-          "type": "promptString",
-          "description": "Test Suite name"
+            "id": "TestSuite",
+            "type": "promptString",
+            "description": "Test Suite name"
         },
         {
             "id": "IsZonal",
@@ -254,7 +252,6 @@
                 "description": "Returns the package of to which current ${file} is part of.",
                 "useFirstResult": true,
             },
-
         },
         {
             "id": "TestPackage",
@@ -294,8 +291,5 @@
             "description": "Count for number of times test to run",
             "default": "1"
         }
-      ]
-  
-  }
-  
-  
+    ]
+}

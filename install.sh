@@ -38,9 +38,9 @@ execute_script() {
     log_info "---------------------------------------------------------------------"
 
     if [ "$#" -gt 0 ]; then
-        bash $SCRIPT_PATH $@
+        bash "$SCRIPT_PATH" "$@"
     else
-        bash $SCRIPT_PATH
+        bash "$SCRIPT_PATH"
     fi
     log_info "---------------------------------------------------------------------"
     log_info "---------------------------------------------------------------------"
@@ -53,6 +53,7 @@ execute_script "$HOME/dotfiles/Installations/go/install.sh" "1.24.0"
 execute_script "$HOME/dotfiles/Installations/fuse/install.sh"
 execute_script "$HOME/dotfiles/Installations/gcsfuse/install.sh"
 execute_script "$HOME/dotfiles/Installations/oh-my-zsh/install.sh"
+execute_script "$HOME/dotfiles/Installations/python3/install.sh"
 
 go run "$HOME/dotfiles/vscode/main.go"
 
