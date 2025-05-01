@@ -272,7 +272,8 @@
             "command": "shellCommand.execute",
             "args": {
                 "command": "bash ${workspaceFolder}/.vscode/taskTestNameHelper.sh ${file} ${lineNumber}",
-                "description": "Returns the package of to which current ${file} is part of.",
+                "description": "Returns the regex to run test at cursor",
+                "useFirstResult": true,
             },
         },
         {

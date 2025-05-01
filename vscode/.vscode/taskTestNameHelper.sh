@@ -146,13 +146,7 @@ if [ -n "$line_content" ]; then
     if [ $last_status -ne 0 ]; then
         # Try for suite type
         extract_method_test_name_from_line "$line_content"
-        last_status=$?
-        if [ $last_status -ne 0 ]; then
-            echo "-run '.*'"
-        fi
     fi
-else 
-    echo "-run '.*'"
 fi
 
 # Exit with 0 as "notfound" is an expected outcome based on input.
