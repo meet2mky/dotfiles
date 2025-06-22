@@ -1,7 +1,7 @@
 // This script uses the Octokit library to interact with the GitHub API.
-import { getOctokit } from '@actions/github';
+const { getOctokit } = require('@actions/github');
 // The context object provides information about the workflow run.
-import { context } from '@actions/github';
+const { context } = require('@actions/github');
 
 // This is the main function that will be executed.
 async function run() {
