@@ -10,31 +10,25 @@ on:
 jobs:
   remind:
     runs-on: ubuntu-latest
+    # These permissions are required for the action to post comments on pull requests.
     permissions:
       pull-requests: write
       issues: write
 
     steps:
-      # 1. Check out the repository code so the workflow can access it.
-      - name: Checkout Repository
-        uses: actions/checkout@v3
+      - name: Check out repository code
+        uses: actions/checkout@v4
 
-      # 2. Set up Node.js environment.
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: '16' # Specify a version of Node.js
+          node-version: '20'
 
-      # 3. Install the script's dependencies from package.json.
       - name: Install Dependencies
-        run: npm install
-        # The working-directory tells the command where to find package.json.
-        working-directory: ./.github/scripts
+        run: npm install @actions/github @actions/core
 
-      # 4. Run the reminder script using Node.js.
-      - name: Run PR Reminder Script
-        run: node reminder.js
-        working-directory: ./.github/scripts
-        # Pass the GITHUB_TOKEN to the script as an environment variable.
+      - name: Run Reminder Script
+        run: node .github/scripts/reminder.js
         env:
+          # The GITHUB_TOKEN is automatically created by Actions.
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
