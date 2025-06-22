@@ -1,0 +1,40 @@
+# .github/workflows/pr-reminder.yml
+
+name: PR Review Reminder
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '*/30 * * * *'
+
+jobs:
+  remind:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      issues: write
+
+    steps:
+      # 1. Check out the repository code so the workflow can access it.
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      # 2. Set up Node.js environment.
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16' # Specify a version of Node.js
+
+      # 3. Install the script's dependencies from package.json.
+      - name: Install Dependencies
+        run: npm install
+        # The working-directory tells the command where to find package.json.
+        working-directory: ./.github/scripts
+
+      # 4. Run the reminder script using Node.js.
+      - name: Run PR Reminder Script
+        run: node reminder.js
+        working-directory: ./.github/scripts
+        # Pass the GITHUB_TOKEN to the script as an environment variable.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
