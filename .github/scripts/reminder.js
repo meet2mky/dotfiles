@@ -28,10 +28,11 @@ async function run() {
         const now = new Date().getTime();
 
         // Get all open pull requests
-        const { data: pullRequests } = await octokit.rest.pulls.list({
+        const pullRequests = await octokit.paginate(octokit.rest.pulls.list, {
             owner: context.repo.owner,
             repo: context.repo.repo,
             state: 'open',
+            per_page: 2,
         });
 
         console.log(`Found ${pullRequests.length} open pull requests.`);
