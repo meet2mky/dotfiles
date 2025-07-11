@@ -49,8 +49,23 @@ git_installer() {
 }
 
 main(){
+    # Go to Home Dir
+    pushd "$HOME"
+    
+    # Setup Git
     git_installer
+    git clone https://github.com/meet2mky/dotfiles.git
+    
+    # Go to dotfiles repo
+    pushd "dotfiles"
+
     ./dotfiles_installer.sh
+    
+    # Come out of dotfiles repo
+    popd
+
+    # Come out of Home Dir
+    popd
 }
 
 main
