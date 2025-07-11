@@ -55,7 +55,7 @@ go run "$HOME/dotfiles/vscode/main.go"
 
 execute_script "$HOME/dotfiles/monitor/install.sh"
 
-bash "$HOME/dotfiles/Installations/tools/add_script_to_executable.sh" "$HOME/dotfiles/install.sh" "dotfiles_install"
+bash "$HOME/dotfiles/Installations/tools/add_script_to_executable.sh" "$HOME/dotfiles/setup.sh" "dotfiles_setup"
 bash "$HOME/dotfiles/Installations/tools/add_script_to_executable.sh" "$HOME/dotfiles/vscode/vscode_symlink_creator.sh" "dotfiles_vscode_symlink_creator"
 
 exec zsh

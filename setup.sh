@@ -54,6 +54,10 @@ main(){
     
     # Setup Git
     git_installer
+
+    # Remove existing dotfiles if present.
+    rm -rf "dotfiles"
+
     git clone https://github.com/meet2mky/dotfiles.git
     
     # Go to dotfiles repo
