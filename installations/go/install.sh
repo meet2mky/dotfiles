@@ -1,11 +1,16 @@
 #!/bin/bash
 
-# Exit immediately if a command exits with a non-zero status.
-set -e
-# Treat unset variables as an error when substituting.
-set -u
-# Pipe failures should cause the script to exit.
-set -o pipefail
+# Exit immediately if a command exits with a non-zero status/ encounters unset variable/ pipe failure.
+set -euo pipefail
+
+# --- Helper Functions ---
+log_info() {
+    echo "[INFO] $1"
+}
+
+log_error() {
+    echo "[ERROR] $1"
+}
 
 # --- Configuration ---
 # Standard Go installation directory
@@ -16,17 +21,6 @@ SYMLINK_DIR="/usr/local/bin"
 GOPATH_DEFAULT="$HOME/go"
 # Temporary download path
 DOWNLOAD_PATH="/tmp/go_installer_download.tar.gz" # Use a more specific tmp name
-
-# --- Helper Functions ---
-log_info() {
-    # Log informational messages to standard output
-    echo "[INFO] $1"
-}
-
-log_error() {
-    # Log error messages to standard error
-    echo "[ERROR] $1" >&2
-}
 
 check_command() {
     if ! command -v "$1" &> /dev/null; then
@@ -119,7 +113,7 @@ fi
 
 # 6. Remove existing symlink if it exists (requires sudo)
 SYMLINK_PATH="${SYMLINK_DIR}/go"
-bash "$HOME/dotfiles/Installations/tools/remove_existing_symlink.sh" "$SYMLINK_PATH"
+bash "$HOME/dotfiles/installations/tools/remove_existing_symlink.sh" "$SYMLINK_PATH"
 
 
 # 7. Extract the new Go archive to /usr/local (creates /usr/local/go) (requires sudo)
@@ -159,7 +153,7 @@ log_info "-> Go executable linked to: ${SYMLINK_PATH}"
 log_info "   (Should be accessible if ${SYMLINK_DIR} is in your PATH)"
 log_info ""
 log_info "Confirming single [$GO_BINARY_NAME] installation..."
-bash "$HOME/dotfiles/Installations/tools/check_single_binary.sh" "$GO_BINARY_NAME"
+bash "$HOME/dotfiles/installations/tools/check_single_binary.sh" "$GO_BINARY_NAME"
 log_info "Checking command: [$GO_BINARY_NAME]..."
 check_command "$GO_BINARY_NAME"
 log_info "Command: [$GO_BINARY_NAME] is available for use ..."

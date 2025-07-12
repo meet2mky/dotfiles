@@ -44,18 +44,18 @@ execute_script() {
     log_info ""
 }
 
-execute_script "$HOME/dotfiles/Installations/zsh/install.sh"
-execute_script "$HOME/dotfiles/Installations/go/install.sh" "1.24.0"
-execute_script "$HOME/dotfiles/Installations/fuse/install.sh"
-execute_script "$HOME/dotfiles/Installations/gcsfuse/install.sh"
-execute_script "$HOME/dotfiles/Installations/oh-my-zsh/install.sh"
-execute_script "$HOME/dotfiles/Installations/python3/install.sh"
+execute_script "$HOME/dotfiles/installations/zsh/install.sh"
+execute_script "$HOME/dotfiles/installations/go/install.sh" "1.24.0"
+execute_script "$HOME/dotfiles/installations/fuse/install.sh"
+execute_script "$HOME/dotfiles/installations/gcsfuse/install.sh"
+execute_script "$HOME/dotfiles/installations/oh-my-zsh/install.sh"
+execute_script "$HOME/dotfiles/installations/python3/install.sh"
 
 go run "$HOME/dotfiles/vscode/main.go"
 
 execute_script "$HOME/dotfiles/monitor/install.sh"
 
-bash "$HOME/dotfiles/Installations/tools/add_script_to_executable.sh" "$HOME/dotfiles/setup.sh" "dotfiles_setup"
-bash "$HOME/dotfiles/Installations/tools/add_script_to_executable.sh" "$HOME/dotfiles/vscode/vscode_symlink_creator.sh" "dotfiles_vscode_symlink_creator"
+bash "$HOME/dotfiles/installations/tools/add_script_to_executable.sh" "$HOME/dotfiles/setup.sh" "dotfiles_setup"
+bash "$HOME/dotfiles/installations/tools/add_script_to_executable.sh" "$HOME/dotfiles/vscode/vscode_symlink_creator.sh" "dotfiles_vscode_symlink_creator"
 
 exec zsh

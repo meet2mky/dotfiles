@@ -26,5 +26,5 @@ check_command() {
 ACTUAL_LINK="$HOME/dotfiles/vscode/.vscode"
 SYMLINK=".vscode"
 
-bash "$HOME/dotfiles/Installations/tools/create_symlink.sh" "$ACTUAL_LINK" $SYMLINK
+bash "$HOME/dotfiles/installations/tools/create_symlink.sh" "$ACTUAL_LINK" $SYMLINK
 

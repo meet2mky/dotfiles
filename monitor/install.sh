@@ -1,47 +1,22 @@
 #!/bin/bash
 
-set -e # Exit immediately if a command fails
+# Exit immediately if a command exits with a non-zero status/ encounters unset variable/ pipe failure.
+set -euo pipefail
+
 
 # --- Configuration ---
-ZSHRC="$HOME/.zshrc"
+FILE_PATH="$HOME/.zshrc"
 DOTFILE_MONITOR_PATH="$HOME/dotfiles/monitor/main.sh" # Use a variable for the path
-BEGIN_MARKER="# --- BEGIN DOTFILE MONITOR ---"
+START_MARKER="# --- BEGIN DOTFILE MONITOR ---"
 END_MARKER="# --- END DOTFILE MONITOR ---"
-
-# --- Helper Functions ---
-
-# Function to check if a line exists in a file
-line_exists() {
-  grep -qF "$1" "$2"
-}
-
-# Function to add the dotfiles check to .zshrc
-add_dotfile_monitor_to_zshrc() {
-  local zsh_code="
+TEXT="
 TEMP_FILE=\"/tmp/dotfiles_changed\"
 if [ -f \"\$TEMP_FILE\" ]; then
-   echo \"Dotfile changes detected...\"
+    echo \"Dotfile changes detected...\"
 fi
 /bin/bash $DOTFILE_MONITOR_PATH &! # Run in background and disown
 "
 
-  # Check if both markers already exist
-  if line_exists "$BEGIN_MARKER" "$ZSHRC" && line_exists "$END_MARKER" "$ZSHRC"; then
-    echo "Dotfile monitor already configured in $ZSHRC."
-    return 1 # Indicate already configured
-  else
-    echo "Adding Dotfile monitor to $ZSHRC..."
-    echo "$BEGIN_MARKER" >> "$ZSHRC"
-    echo "$zsh_code" >> "$ZSHRC"
-    echo "$END_MARKER" >> "$ZSHRC"
-    echo "Dotfile monitor added to $ZSHRC. You might need to source it (exec zsh) or open a new terminal."
-    return 0 # Indicate success
-  fi
-}
+./installations/tools/block_manager.sh "$FILE_PATH" "$START_MARKER" "$END_MARKER" "REMOVE"
 
-# --- Main Execution ---
-echo "Removing existing monitor markers if present..."
-bash "$HOME/dotfiles/monitor/uninstall.sh"
-add_dotfile_monitor_to_zshrc
-
-exit 0
+./installations/tools/block_manager.sh "$FILE_PATH" "$START_MARKER" "$END_MARKER" "INSERT" "$TEXT"

@@ -1,11 +1,16 @@
 #!/bin/bash
 
-# Exit immediately if a command exits with a non-zero status.
-set -e
-# Treat unset variables as an error when substituting.
-set -u
-# Pipe failures should cause the script to exit.
-set -o pipefail
+# Exit immediately if a command exits with a non-zero status/ encounters unset variable/ pipe failure.
+set -euo pipefail
+
+# --- Helper Functions ---
+log_info() {
+    echo "[INFO] $1"
+}
+
+log_error() {
+    echo "[ERROR] $1"
+}
 
 # ==============================================================================
 # Script: check_single_binary.sh
@@ -31,16 +36,6 @@ set -o pipefail
 # Dependencies: bash, type (built-in), grep, sed
 # Date: 2025-04-05
 # ==============================================================================
-
-
-# --- Helper Functions ---
-log_info() {
-    echo "[INFO] $1"
-}
-
-log_error() {
-    echo "[ERROR] $1" >&2
-}
 
 # --- Argument Validation ---
 # Check if exactly one argument was provided.

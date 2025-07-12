@@ -1,12 +1,7 @@
-
 #!/bin/bash
 
-# Exit immediately if a command exits with a non-zero status.
-set -e
-# Treat unset variables as an error when substituting.
-set -u
-# Pipe failures should cause the script to exit.
-set -o pipefail
+# Exit immediately if a command exits with a non-zero status/ encounters unset variable/ pipe failure.
+set -euo pipefail
 
 # --- Helper Functions ---
 log_info() {
@@ -14,7 +9,7 @@ log_info() {
 }
 
 log_error() {
-    echo "[ERROR] $1" >&2
+    echo "[ERROR] $1"
 }
 
 # Check for arguments
@@ -31,7 +26,7 @@ log_info ""
 log_info ""
 log_info "---------------------------------------------------------------------"
 log_info "Creating symlink from [$SYMLINK] --> [$ACTUAL_LINK]...."
-bash "$HOME/dotfiles/Installations/tools/remove_existing_symlink.sh" "$SYMLINK"
+bash "$HOME/dotfiles/installations/tools/remove_existing_symlink.sh" "$SYMLINK"
 sudo ln -s "$ACTUAL_LINK" "$SYMLINK"
 log_info "Symlink [$SYMLINK] created successfully..."
 log_info "---------------------------------------------------------------------"

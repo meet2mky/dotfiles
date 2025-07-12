@@ -1,14 +1,7 @@
 #!/bin/bash
 
-# Script to install Zsh and Oh My Zsh.
-# Assumes git, curl, and sh are already available.
-
-# Exit immediately if a command exits with a non-zero status.
-set -e
-# Treat unset variables as an error when substituting.
-set -u
-# Pipe failures should cause the script to exit.
-set -o pipefail
+# Exit immediately if a command exits with a non-zero status/ encounters unset variable/ pipe failure.
+set -euo pipefail
 
 # --- Helper Functions ---
 log_info() {
@@ -16,7 +9,7 @@ log_info() {
 }
 
 log_error() {
-    echo "[ERROR] $1" >&2
+    echo "[ERROR] $1"
 }
 
 # --- Main Script ---

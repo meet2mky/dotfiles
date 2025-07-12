@@ -24,7 +24,6 @@ check_command() {
     fi
 }
 
-
 # --- Main Script ---
 log_info "Starting Zsh installation script..."
 

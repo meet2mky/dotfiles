@@ -18,6 +18,7 @@ present_command() {
     fi
     return 1
 }
+
 git_installer() {
     log_info ""
     log_info ""
