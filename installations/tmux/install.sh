@@ -65,6 +65,8 @@ END_MARKER="# --- END TMUX ---"
 TEXT="
 # Turn the mouse on
 set -g mouse on
+# Set scroll speed on tmux to 5 lines per scroll.
+set -g @scroll-speed-num-lines-per-scroll 5
 # Set the default shell to zsh
 set-option -g default-shell /usr/bin/zsh
 "
