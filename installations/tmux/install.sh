@@ -60,9 +60,12 @@ fi
 FILE_PATH="$HOME/.tmux.conf"
 rm -rf "$FILE_PATH"
 touch "$FILE_PATH"
-START_MARKER="# --- BEGIN TMUX SHELL---"
-END_MARKER="# --- END TMUX SHELL---"
+START_MARKER="# --- BEGIN TMUX ---"
+END_MARKER="# --- END TMUX ---"
 TEXT="
+# Turn the mouse on
+set -g mouse on
+# Set the default shell to zsh
 set-option -g default-shell /usr/bin/zsh
 "
 
