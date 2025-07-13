@@ -50,16 +50,20 @@ install_tmux() {
     fi
 }
 
+log_info ""
+log_info ""
 if ! install_tmux; then 
     exit 1
 fi
 
 # --- Configuration ---
-FILE_PATH="$HOME/.zshrc"
-START_MARKER="# --- BEGIN TMUX ---"
-END_MARKER="# --- END TMUX ---"
+FILE_PATH="$HOME/.tmux.conf"
+rm -rf "$FILE_PATH"
+touch "$FILE_PATH"
+START_MARKER="# --- BEGIN TMUX SHELL---"
+END_MARKER="# --- END TMUX SHELL---"
 TEXT="
-work() { tmx2 new-session -A -s \${1:-work}; }
+set-option -g default-shell /usr/bin/zsh
 "
 
 if ! ./installations/tools/block_manager.sh "$FILE_PATH" "$START_MARKER" "$END_MARKER" "REMOVE"; then 
