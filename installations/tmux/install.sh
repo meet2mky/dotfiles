@@ -69,6 +69,8 @@ set -g mouse on
 set -g @scroll-speed-num-lines-per-scroll 1
 # Set the default shell to zsh
 set-option -g default-shell /usr/bin/zsh
+# Set the default terminal type.
+set -g default-terminal xterm-256color
 "
 
 if ! ./installations/tools/block_manager.sh "$FILE_PATH" "$START_MARKER" "$END_MARKER" "REMOVE"; then 
