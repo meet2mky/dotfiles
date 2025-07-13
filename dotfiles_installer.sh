@@ -9,7 +9,7 @@ log_info() {
 }
 
 log_error() {
-    echo "[ERROR] $1" >&2
+    echo "[ERROR] $1"
 }
 
 check_command() {
@@ -50,6 +50,7 @@ execute_script "$HOME/dotfiles/installations/fuse/install.sh"
 execute_script "$HOME/dotfiles/installations/gcsfuse/install.sh"
 execute_script "$HOME/dotfiles/installations/oh-my-zsh/install.sh"
 execute_script "$HOME/dotfiles/installations/python3/install.sh"
+execute_script "$HOME/dotfiles/installations/tmux/install.sh"
 
 go run "$HOME/dotfiles/vscode/main.go"
 
