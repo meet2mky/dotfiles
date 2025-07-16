@@ -28,7 +28,7 @@ fi
 if command -v apt &>/dev/null; then
     log_info "Using apt package manager (Debian/Ubuntu based)."
     log_info "Updating package lists..."
-    sudo apt update
+    sudo apt update >> /dev/null 2>&1 || true
     log_info "Installing ZSH..."
     sudo apt install -y zsh
     log_info "ZSH installation done."
