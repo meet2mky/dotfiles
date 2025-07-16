@@ -76,7 +76,7 @@ if [[ "$(uname -s)" == "Linux" ]]; then
   if command -v apt >/dev/null 2>&1; then
     log_info "Using apt package manager (Debian/Ubuntu based)."
     log_info "Updating package lists..."
-    sudo apt update
+    sudo apt update >> /dev/null 2>&1 || true
     log_info "Installing fuse3..."
     sudo apt install -y fuse3
     log_info "FUSE installation command finished via apt."

@@ -12,5 +12,5 @@ log_error() {
     echo "[ERROR] $1"
 }
 
-sudo apt-get update -y
+sudo apt update >> /dev/null 2>&1 || true
 sudo apt-get install -y "python3"

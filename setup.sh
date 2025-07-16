@@ -28,7 +28,8 @@ git_installer() {
         return 0
     fi
     log_info "Git is not detected on system. Installation and configuration started..."
-    sudo apt update && sudo apt install git -y
+    sudo apt update >> /dev/null 2>&1 || true
+    sudo apt install git -y
     log_info "Checking git version..."
     git --version
     log_info ""
