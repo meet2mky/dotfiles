@@ -63,6 +63,8 @@ touch "$FILE_PATH"
 START_MARKER="# --- BEGIN TMUX ---"
 END_MARKER="# --- END TMUX ---"
 TEXT="
+# Give more space to the left side (where the session name is)
+set -g status-left-length 50
 # Turn the mouse on
 set -g mouse on
 # Set scroll speed on tmux to 1 line per scroll.
