@@ -17,6 +17,8 @@
 # Usage:
 #   ts
 ts() {
+  # perform cleanup..
+  tmux-cleanup
   # Use the canonical, real path of the current working directory.
   local full_path
   full_path=$(realpath "$PWD")
@@ -55,9 +57,6 @@ ts() {
     # Store the full, original path in a session environment variable. This is crucial for the cleanup script.
     tmux set-environment -t "=$session_name" CREATION_PATH "$full_path"
   fi
-  # perform cleanup..
-  tmux-cleanup
-  sleep 4
   # If you're already inside a tmux session, just switch to the target session.
   # Otherwise, attach to it from your main shell.
   if [ -n "$TMUX" ]; then
