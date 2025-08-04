@@ -73,6 +73,8 @@ set -g @scroll-speed-num-lines-per-scroll 1
 set-option -g default-shell /usr/bin/zsh
 # Set the default terminal type.
 set -g default-terminal xterm-256color
+# Ensure VSCode works in tmux
+set-option -g update-environment "DISPLAY XAUTHORITY SSH_AUTH_SOCK XDG_RUNTIME_DIR"
 "
 
 if ! ./installations/tools/block_manager.sh "$FILE_PATH" "$START_MARKER" "$END_MARKER" "REMOVE"; then 
