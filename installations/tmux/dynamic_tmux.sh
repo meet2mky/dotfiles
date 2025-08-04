@@ -47,22 +47,26 @@ ts() {
 
   # A final fallback in case the name ends up empty (e.g., for the root directory '/').
   [[ -z "$session_name" ]] && session_name="root"
-
+  echo "Session Name is: [$session_name]"
   # Use `tmux has-session` with an exact match `='session_name'` to avoid ambiguity.
-  if ! tmux has-session -t="=$session_name" 2>/dev/null; then
-    echo "Creating new tmux session '$session_name'..."
+  if ! tmux has-session -t "$session_name" 2>/dev/null; then
+    echo "Creating new tmux session [$session_name]."
     # Create the session detached (-d), name it (-s), and set its starting directory (-c).
     tmux new-session -d -s "$session_name" -c "$full_path"
 
     # Store the full, original path in a session environment variable. This is crucial for the cleanup script.
     tmux set-environment -t "=$session_name" CREATION_PATH "$full_path"
+  else 
+    echo "Attaching to existing tmux session [$session_name]."
   fi
-  # If you're already inside a tmux session, just switch to the target session.
-  # Otherwise, attach to it from your main shell.
   if [ -n "$TMUX" ]; then
-    tmux switch-client -t "=$session_name"
+    echo "I am inside the TMUX already ✅"
+    echo "Going to swith client to session [$session_name]."
+    tmux switch-client -t "$session_name"
   else
-    tmux attach-session -t "=$session_name"
+    echo "I am not in a tmux session ❌."
+    echo "Going to attach the session [$session_name]."
+    tmux attach-session -t "$session_name"
   fi
 }
 
@@ -113,7 +117,10 @@ tmux-cleanup() {
 
   echo "✅ Cleanup complete."
 }
-
 # --- SCRIPT EXECUTION ---
-# Create a new session for the current directory or attach to an existing one.
-ts
+# This should only run in an interactive shell, and not when we are already inside tmux,
+# to prevent recursive calls when tmux starts its default-shell.
+if [[ -z "$TMUX" ]]; then
+  true > "$HOME/dotfiles/installations/tmux/tmux.log" 2>&1
+  ts >> "$HOME/dotfiles/installations/tmux/tmux.log" 2>&1
+fi

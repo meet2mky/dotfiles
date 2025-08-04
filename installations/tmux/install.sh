@@ -63,18 +63,20 @@ touch "$FILE_PATH"
 START_MARKER="# --- BEGIN TMUX ---"
 END_MARKER="# --- END TMUX ---"
 TEXT="
-# Give more space to the left side (where the session name is)
-set -g status-left-length 50
-# Turn the mouse on
-set -g mouse on
-# Set scroll speed on tmux to 1 line per scroll.
-set -g @scroll-speed-num-lines-per-scroll 1
-# Set the default shell to zsh
-set-option -g default-shell /usr/bin/zsh
-# Set the default terminal type.
-set -g default-terminal xterm-256color
-# Ensure VSCode works in tmux
-set-option -g update-environment "DISPLAY XAUTHORITY SSH_AUTH_SOCK XDG_RUNTIME_DIR"
+# Set zsh as the default shell
+set-option -g default-shell '/usr/bin/zsh'
+# Enable mouse mode
+set-option -g mouse on
+# Update PATH environment variable
+set-option -g update-environment 'PATH DISPLAY SSH_AUTH_SOCK'
+# Show an indicator on the right when prefix is active
+set -g status-right '#[fg=white,bg=default]#{?client_prefix,#[reverse] PREFIX_PRESSED #[noreverse],} %H:%M %d-%b-%y'
+# List of plugins
+set -g @plugin 'tmux-plugins/tpm'
+set -g @plugin 'tmux-plugins/tmux-sensible'
+set -g @plugin 'nhdaly/tmux-better-mouse-mode'
+# Initialize TMUX plugin manager (keep this line at the very bottom of tmux.conf)
+run '~/.tmux/plugins/tpm/tpm'
 "
 
 if ! ./installations/tools/block_manager.sh "$FILE_PATH" "$START_MARKER" "$END_MARKER" "REMOVE"; then 
