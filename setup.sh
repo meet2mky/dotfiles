@@ -129,9 +129,10 @@ show_menu() {
     log_info "Following components will be installed:"
     echo "$chosen_options"
 
-    read -p "Proceed with installation? (y/n): " confirm
-    if [[ "$confirm" != "y" && "$confirm" != "Y" ]]; then
-        echo "Installation aborted."
+    /home/mohitkyadav_google_com/go/bin/gum confirm "Proceed?"
+
+    if [[ $? -ne 0 ]]; then
+        log_debug "Aborting installation.."
         exit 0
     fi
 
