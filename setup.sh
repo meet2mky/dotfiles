@@ -146,6 +146,7 @@ show_menu() {
         done
     done
 }
+GUM="$HOME/go/bin/gum"
 
 main(){
     # Go to Home Dir
@@ -155,8 +156,8 @@ main(){
     gum_installer
 
     # Setup Git
-    gum confirm "Install Github & Steup" && git_installer
-    gum confirm "Remove dotfiles and Install again" && (rm -rf $HOME/dotfiles && git clone https://github.com/meet2mky/dotfiles.git)
+    $GUM confirm "Install Github & Steup" && git_installer
+    $GUM confirm "Remove dotfiles and Install again" && (rm -rf $HOME/dotfiles && git clone https://github.com/meet2mky/dotfiles.git)
     # Go to dotfiles repo
     pushd "dotfiles"
     
