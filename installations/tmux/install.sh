@@ -66,7 +66,8 @@ rm -rf "$FILE_PATH"
 touch "$FILE_PATH"
 START_MARKER="# --- BEGIN TMUX ---"
 END_MARKER="# --- END TMUX ---"
-TEXT="
+TEXT=$(cat <<'EOF'
+
 # Set zsh as the default shell
 set-option -g default-shell '/usr/bin/zsh'
 # Enable mouse mode
@@ -81,17 +82,14 @@ set -g @plugin 'tmux-plugins/tmux-sensible'
 set -g @plugin 'nhdaly/tmux-better-mouse-mode'
 # Initialize TMUX plugin manager (keep this line at the very bottom of tmux.conf)
 run '~/.tmux/plugins/tpm/tpm'
-"
+x
+EOF
+)
+# Remove the placeholder 'x' character, leaving the newlines intact
+TEXT=${TEXT%x}
 
-if ! ./installations/tools/block_manager.sh "$FILE_PATH" "$START_MARKER" "$END_MARKER" "REMOVE"; then 
-    log_error "Unable to remove existing tmux marker. Exiting..."
-    exit 1
-else
-    log_info "tmux marker successfully cleaned up."
-fi
-
-if ! ./installations/tools/block_manager.sh "$FILE_PATH" "$START_MARKER" "$END_MARKER" "INSERT" "$TEXT"; then 
-    log_error "Unable to add tmux marker. Exiting..."
+if ! ./installations/tools/block_manager.sh "$FILE_PATH" "$START_MARKER" "$END_MARKER" "$TEXT"; then 
+    log_error "Unable to update tmux marker. Exiting..."
 else
     log_info "tmux marker successfully added."
 fi
