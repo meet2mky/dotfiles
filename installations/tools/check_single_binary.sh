@@ -5,11 +5,15 @@ set -euo pipefail
 
 # --- Helper Functions ---
 log_info() {
-    echo "[INFO] $1"
+    echo "✅[INF] $1"
+}
+
+log_debug() {
+    echo "🔍[DBG] $1"
 }
 
 log_error() {
-    echo "[ERROR] $1"
+    echo "❌[ERR] $1"
 }
 
 # ==============================================================================
@@ -40,9 +44,9 @@ log_error() {
 # --- Argument Validation ---
 # Check if exactly one argument was provided.
 if [[ "$#" -ne 1 ]]; then
-    # Print usage instructions and error message to standard error.
-    log_info "Usage: $0 <binary_name>" >&2
+    # Print usage instructions and error.
     log_error "Exactly one argument (the binary name) is required." >&2
+    log_debug "Usage: $0 <binary_name>" >&2
     exit 1 # Exit with failure status code
 fi
 
@@ -51,7 +55,7 @@ binary_name="$1"
 # Initialize an array to store found paths safely.
 locations=()
 
-log_info "Checking for installations of '$binary_name' in PATH..."
+log_debug "Checking for installations of '$binary_name' in PATH..."
 
 # --- Find Locations using 'type -a' ---
 # Use 'type -a' to find all interpretations of the command name by the shell.
@@ -75,8 +79,8 @@ count="${#locations[@]}"
 # --- Report Results and Exit ---
 if [[ "$count" -eq 0 ]]; then
     # No installations found in PATH.
-    log_error "Binary '$binary_name' not found in your PATH." >&2
-    log_info "Current PATH=$PATH" >&2
+    log_error "Binary '$binary_name' not found in your PATH."
+    log_debug "Current PATH=$PATH" 
     exit 1 # Exit script with failure status code
 elif [[ "$count" -eq 1 ]]; then
     # Exactly one installation found.
@@ -85,10 +89,10 @@ elif [[ "$count" -eq 1 ]]; then
     exit 0 # Exit script with success status code
 else # count > 1
     # Multiple installations found.
-    log_error "Multiple installations of '$binary_name' found in your PATH:" >&2
+    log_error "Multiple installations of '$binary_name' found in your PATH:"
     # Print each found location clearly, prefixed with '  - '.
-    printf "  - %s\n" "${locations[@]}" >&2
-    log_info "Please resolve the conflict by adjusting your PATH or removing duplicate installations." >&2
-    log_info "Current PATH=$PATH" >&2
+    printf "  - %s\n" "${locations[@]}"
+    log_debug "Please resolve the conflict by adjusting your PATH or removing duplicate installations."
+    log_debug "Current PATH=$PATH"
     exit 1 # Exit script with failure status code
 fi

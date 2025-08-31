@@ -5,22 +5,26 @@ set -euo pipefail
 
 # --- Helper Functions ---
 log_info() {
-    echo "[INFO] $1"
+    echo "✅[INF] $1"
+}
+
+log_debug() {
+    echo "🔍[DBG] $1"
 }
 
 log_error() {
-    echo "[ERROR] $1"
+    echo "❌[ERR] $1"
 }
 
 # Installs tmux by detecting the package manager (apt, dnf, yum, pacman).
 install_tmux() {
     # Check if tmux is already installed
     if command -v tmux &>/dev/null; then
-        log_info "✅ tmux is already installed. Installation Skipped."
+        log_debug " tmux is already installed. Installation Skipped."
         return 0
     fi
 
-    log_info "Attempting to install tmux..."
+    log_debug "Attempting to install tmux..."
 
     # Detect package manager and install tmux
     if command -v apt-get &>/dev/null; then
@@ -36,22 +40,22 @@ install_tmux() {
         # For Arch Linux, Manjaro, etc.
         sudo pacman -Syu --noconfirm tmux
     else
-        log_error "❌ Could not find a supported package manager."
-        log_info "Please install tmux manually."
+        log_error "Could not find a supported package manager."
+        log_debug "Please install tmux manually."
         return 1
     fi
 
     # Verify installation
     if command -v tmux &>/dev/null; then
-        log_info "✅ tmux has been installed successfully."
+        log_info "tmux has been installed successfully."
     else
-        log_error "❌ tmux installation failed."
+        log_error "tmux installation failed."
         return 1
     fi
 }
 
-log_info ""
-log_info ""
+log_debug ""
+log_debug ""
 if ! install_tmux; then 
     exit 1
 fi
@@ -80,14 +84,31 @@ run '~/.tmux/plugins/tpm/tpm'
 "
 
 if ! ./installations/tools/block_manager.sh "$FILE_PATH" "$START_MARKER" "$END_MARKER" "REMOVE"; then 
-    log_error "❌ Unable to remove existing tmux marker. Exiting..."
+    log_error "Unable to remove existing tmux marker. Exiting..."
     exit 1
 else
-    log_info "✅ tmux marker successfully cleaned up."
+    log_info "tmux marker successfully cleaned up."
 fi
 
 if ! ./installations/tools/block_manager.sh "$FILE_PATH" "$START_MARKER" "$END_MARKER" "INSERT" "$TEXT"; then 
-    log_error "❌ Unable to add tmux marker. Exiting..."
+    log_error "Unable to add tmux marker. Exiting..."
 else
-    log_info "✅ tmux marker successfully added."
+    log_info "tmux marker successfully added."
 fi
+
+
+START_MARKER="# --- BEGIN ALIAS ---"
+END_MARKER="# --- END ALIAS ---"
+FILE_PATH="$HOME/.zshrc"
+TEXT=$(cat <<'EOF'
+
+alias tmux-path-refresh='source ~/.zshrc && for var in $(env | cut -d= -f1); do tmux set-environment -g "$var" "$(printenv "$var")"; done && echo "✅ tmux environment refreshed!"'
+add-to-path() { if [[ -d "$1" ]] && (( ! ${path[(I)$1:A]} )); then path=("$1:A" $path); fi; }
+x
+EOF
+)
+# Remove the placeholder 'x' character, leaving the newlines intact
+TEXT=${TEXT%x}
+
+bash "$HOME/dotfiles/installations/tools/block_manager.sh" "$FILE_PATH" "$START_MARKER" "$END_MARKER" "$TEXT"
+

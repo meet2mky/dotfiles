@@ -5,11 +5,15 @@ set -euo pipefail
 
 # --- Helper Functions ---
 log_info() {
-    echo "[INFO] $1"
+    echo "✅[INF] $1"
+}
+
+log_debug() {
+    echo "🔍[DBG] $1"
 }
 
 log_error() {
-    echo "[ERROR] $1"
+    echo "❌[ERR] $1"
 }
 
 # --- Configuration ---
@@ -30,15 +34,14 @@ check_command() {
 }
 
 print_usage() {
-  # Print usage instructions to standard error using log_error
-  log_info "Usage: $0 <go_version>"
-  log_info "Example: $0 1.24.0"
-  log_info "Find versions at: https://go.dev/dl/"
+  log_debug "Usage: $0 <go_version>"
+  log_debug "Example: $0 1.24.0"
+  log_debug "Find versions at: https://go.dev/dl/"
 }
 
 cleanup_download() {
     if [ -f "$DOWNLOAD_PATH" ]; then
-        log_info "Cleaning up downloaded file: ${DOWNLOAD_PATH}"
+        log_debug "Cleaning up downloaded file: ${DOWNLOAD_PATH}"
         rm -f "$DOWNLOAD_PATH"
     fi
 }
@@ -55,7 +58,7 @@ if [ "$#" -ne 1 ]; then # Check if exactly one argument is provided
     exit 1
 fi
 GO_VERSION="$1"
-log_info "Target Go Version: ${GO_VERSION}"
+log_debug "Target Go Version: ${GO_VERSION}"
 
 # 2. Detect OS and Architecture
 OS=$(uname -s | tr '[:upper:]' '[:lower:]')
@@ -78,16 +81,16 @@ case "$OS" in
     ;;
 esac
 
-log_info "Detected OS: ${OS}"
-log_info "Detected Arch: ${ARCH}"
+log_debug "Detected OS: ${OS}"
+log_debug "Detected Arch: ${ARCH}"
 
 # 3. Construct Filename and Download URL
 FILENAME="go${GO_VERSION}.${OS}-${ARCH}.tar.gz"
 DOWNLOAD_URL="https://dl.google.com/go/${FILENAME}"
 
 # 4. Download the Go archive
-log_info "Downloading Go version ${GO_VERSION} for ${OS}-${ARCH}..."
-log_info "URL: ${DOWNLOAD_URL}"
+log_debug "Downloading Go version ${GO_VERSION} for ${OS}-${ARCH}..."
+log_debug "URL: ${DOWNLOAD_URL}"
 # Clear any previous download artifact first
 cleanup_download
 
@@ -101,9 +104,9 @@ fi
 
 # 5. Remove existing Go installation (requires sudo)
 if [ -d "$GO_ROOT_INSTALL_DIR" ]; then
-  log_info "Removing existing Go installation at ${GO_ROOT_INSTALL_DIR}..."
+  log_debug "Removing existing Go installation at ${GO_ROOT_INSTALL_DIR}..."
   if sudo rm -rf "$GO_ROOT_INSTALL_DIR"; then
-     log_info "Previous installation removed."
+     log_debug "Previous installation removed."
   else
      log_error "Failed to remove existing Go installation. Check sudo permissions for ${GO_ROOT_INSTALL_DIR}."
      # cleanup_download runs automatically via trap EXIT
@@ -111,13 +114,9 @@ if [ -d "$GO_ROOT_INSTALL_DIR" ]; then
   fi
 fi
 
-# 6. Remove existing symlink if it exists (requires sudo)
-SYMLINK_PATH="${SYMLINK_DIR}/go"
-bash "$HOME/dotfiles/installations/tools/remove_existing_symlink.sh" "$SYMLINK_PATH"
 
-
-# 7. Extract the new Go archive to /usr/local (creates /usr/local/go) (requires sudo)
-log_info "Extracting ${FILENAME} to /usr/local ..."
+# 6. Extract the new Go archive to /usr/local (creates /usr/local/go) (requires sudo)
+log_debug "Extracting ${FILENAME} to /usr/local ..."
 # Use sudo to extract to /usr/local
 if sudo tar -C /usr/local -xzf "$DOWNLOAD_PATH"; then
   log_info "Extraction complete to ${GO_ROOT_INSTALL_DIR}."
@@ -127,56 +126,38 @@ else
   exit 1
 fi
 
-# 8. Create the symbolic link (requires sudo)
-GO_EXECUTABLE_PATH="${GO_ROOT_INSTALL_DIR}/bin/go"
-log_info "Creating symbolic link from ${SYMLINK_PATH} to ${GO_EXECUTABLE_PATH}..."
-if sudo ln -sf "$GO_EXECUTABLE_PATH" "$SYMLINK_PATH"; then
-  log_info "Symbolic link created successfully."
-else
-  log_error "Failed to create symbolic link. Check sudo permissions for ${SYMLINK_DIR}."
-  # cleanup_download runs automatically via trap EXIT
-  exit 1
-fi
-
-# 9. Clean up (Download already handled by trap)
-# cleanup_download runs automatically via trap EXIT
-
-# 10. Provide Environment Variable Instructions (Using log_info for all lines)
+# 7. Provide Environment Variable Instructions (Using log_info for all lines)
 GOROOT="${GO_ROOT_INSTALL_DIR}"
 GOPATH="${GOPATH_DEFAULT}" # You can change this if needed
 GO_BINARY_NAME="go"
-log_info "Go ${GO_VERSION} installation process finished."
-log_info ""
-log_info "------------------- Installation Summary & Next Steps -------------------"
-log_info "-> Go ${GO_VERSION} installed to: ${GOROOT}"
-log_info "-> Go executable linked to: ${SYMLINK_PATH}"
-log_info "   (Should be accessible if ${SYMLINK_DIR} is in your PATH)"
-log_info ""
-log_info "Confirming single [$GO_BINARY_NAME] installation..."
+log_debug "Go ${GO_VERSION} installation process finished."
+log_debug ""
+log_debug "------------------- Installation Summary -------------------"
+log_debug "-> Go ${GO_VERSION} installed to: ${GOROOT}"
+log_debug ""
+log_debug "Confirming single [$GO_BINARY_NAME] installation..."
 bash "$HOME/dotfiles/installations/tools/check_single_binary.sh" "$GO_BINARY_NAME"
-log_info "Checking command: [$GO_BINARY_NAME]..."
+log_debug "Checking command: [$GO_BINARY_NAME]..."
 check_command "$GO_BINARY_NAME"
 log_info "Command: [$GO_BINARY_NAME] is available for use ..."
-log_info ""
-log_info "IMPORTANT: Set GOROOT and GOPATH environment variables."
-log_info "While the 'go' command might be found via the symlink, setting GOROOT"
-log_info "explicitly ensures tools and IDEs can find the Go installation reliably."
-log_info "GOPATH is essential for managing your Go workspace and packages."
-log_info ""
-log_info "Add the following lines to your shell profile (~/.bashrc, ~/.zshrc, ~/.profile, etc.):"
-log_info ""
-log_info "  export GOROOT=${GOROOT} # Root of the Go installation"
-log_info "  export GOPATH=${GOPATH} # Your Go workspace"
-log_info "  export PATH=\$PATH:\${GOPATH}/bin # Add GOPATH/bin for Go tools you install"
-log_info ""
-log_info "NOTE: We are NOT adding GOROOT/bin to PATH, as the symlink should handle finding 'go'."
-log_info "      However, adding GOPATH/bin is still recommended for tools installed via 'go install'."
-log_info ""
-log_info "After adding these lines, either restart your terminal or run:"
-log_info "  source ~/.your_profile_file  (e.g., source ~/.bashrc)"
-log_info ""
-log_info "-------------------------------------------------------------------------"
-log_info ""
+START_MARKER="# --- BEGIN GO ENV ---"
+END_MARKER="# --- END GO ENV ---"
+FILE_PATH="$HOME/.zshrc"
+TEXT=$(cat <<'EOF'
+
+add-to-path "$(go env GOROOT)/bin"
+add-to-path "$(go env GOPATH)/bin"
+x
+EOF
+)
+# Remove the placeholder 'x' character, leaving the newlines intact
+TEXT=${TEXT%x}
+
+bash "$HOME/dotfiles/installations/tools/block_manager.sh" "$FILE_PATH" "$START_MARKER" "$END_MARKER" "$TEXT"
+log_debug ""
+log_debug ""
+log_debug "----------------------------------------------------------"
+log_debug ""
 
 # trap EXIT will handle final cleanup if needed
 exit 0

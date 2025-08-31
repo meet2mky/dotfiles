@@ -4,12 +4,17 @@
 set -euo pipefail
 
 # --- Helper Functions ---
+# --- Helper Functions ---
 log_info() {
-    echo "[INFO] $1"
+    echo "✅[INF] $1"
+}
+
+log_debug() {
+    echo "🔍[DBG] $1"
 }
 
 log_error() {
-    echo "[ERROR] $1"
+    echo "❌[ERR] $1"
 }
 
 # --- Main Function Definition ---
@@ -41,7 +46,7 @@ remove_existing_symlink() {
 
     # Check if the path exists and is specifically a symbolic link (-L)
     if [ -L "$symlink_path" ]; then
-        log_info "Removing existing symlink at ${symlink_path}..."
+        log_debug "Removing existing symlink at ${symlink_path}..."
         if sudo rm "$symlink_path"; then
             log_info "Previous symlink removed successfully."
         else
@@ -69,7 +74,7 @@ remove_existing_symlink() {
 # 1. Check for symlink path argument
 if [ "$#" -ne 1 ]; then # Check if exactly one argument is provided
     log_error "symlink path argument missing or incorrect number of arguments."
-    log_info Usage: $0 /path/to/symlink
+    log_debug Usage: $0 /path/to/symlink
     exit 1
 fi
 SYMLINK_PATH="$1"
