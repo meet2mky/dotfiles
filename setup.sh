@@ -155,8 +155,8 @@ main(){
     gum_installer
 
     # Setup Git
-    "$(go env GOPATH)/bin/gum" confirm "Install Github & Steup" && git_installer
-    "$(go env GOPATH)/bin/gum" "Remove dotfiles and Install again" && (rm -rf $HOME/dotfiles && git clone https://github.com/meet2mky/dotfiles.git)
+    /home/mohitkyadav_google_com/go/bin/gum confirm "Install Github & Steup" && git_installer
+    /home/mohitkyadav_google_com/go/bin/gum confirm "Remove dotfiles and Install again" && (rm -rf $HOME/dotfiles && git clone https://github.com/meet2mky/dotfiles.git)
     # Go to dotfiles repo
     pushd "dotfiles"
     
