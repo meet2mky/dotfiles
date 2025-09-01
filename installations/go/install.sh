@@ -19,8 +19,6 @@ log_error() {
 # --- Configuration ---
 # Standard Go installation directory
 GO_ROOT_INSTALL_DIR="/usr/local/go"
-# Directory for the symbolic link (usually in default PATH)
-SYMLINK_DIR="/usr/local/bin"
 # Default location for Go projects/packages
 GOPATH_DEFAULT="$HOME/go"
 # Temporary download path
@@ -128,7 +126,6 @@ fi
 
 # 7. Provide Environment Variable Instructions (Using log_info for all lines)
 GOROOT="${GO_ROOT_INSTALL_DIR}"
-GOPATH="${GOPATH_DEFAULT}" # You can change this if needed
 GO_BINARY_NAME="go"
 log_debug "Go ${GO_VERSION} installation process finished."
 log_debug ""
@@ -145,6 +142,7 @@ END_MARKER="# --- END GO ENV ---"
 FILE_PATH="$HOME/.zshrc"
 TEXT=$(cat <<'EOF'
 
+add-to-path "/usr/local/go/bin"
 add-to-path "$(go env GOROOT)/bin"
 add-to-path "$(go env GOPATH)/bin"
 x
