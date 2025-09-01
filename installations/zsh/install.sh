@@ -30,7 +30,7 @@ if command -v apt &>/dev/null; then
     log_info "Updating package lists..."
     sudo apt update >> /dev/null 2>&1 || true
     log_info "Installing ZSH..."
-    sudo apt install -y zsh
+    sudo apt install -y zsh >> /dev/null 2>&1
     log_info "ZSH installation done."
 else
     # This script currently only supports apt.

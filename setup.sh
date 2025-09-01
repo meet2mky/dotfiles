@@ -54,66 +54,32 @@ git_installer() {
     yes | gh auth login --hostname github.com --protocol https --web
 }
 
-execute_script() {
-    if [ "$#" -eq 0 ]; then
-        log_error "Requires at least one argument." >&2
-        return 1
-    fi
-    
-    local SCRIPT_PATH="$1"
-    shift # Remove the first argument from the list
-
-    log_debug ""
-    log_debug ""
-    log_debug "---------------------------------------------------------------------"
-    log_debug "---------------------------------------------------------------------"
-
-    if [ "$#" -gt 0 ]; then
-        bash "$SCRIPT_PATH" "$@"
-    else
-        bash "$SCRIPT_PATH"
-    fi
-    log_debug "---------------------------------------------------------------------"
-    log_debug "---------------------------------------------------------------------"
-    log_debug ""
-    log_debug ""
-}
-
-gum_installer() {
-    if present_command "gum"; then
-        log_debug "gum is already installed, Installation and configuration skipped..."
-        return 0
-    fi
-    log_debug "gum is not detected on system. Installation and configuration started..."
-    execute_script "$HOME/dotfiles/installations/gum/install.sh"
-}
-
 show_menu() {
     local options=(
         "zsh"
         "oh-my-zsh"
+        "tmux"
         "go"
         "fuse"
         "gcsfuse"
         "python3"
-        "tmux"
         "vscode_extensions"
         "dotfile_monitor"
         "dotfiles_setup executable"
         "dotfiles_vscode_symlink_creator executable"
     )
     local commands=(
-        "execute_script "$HOME/dotfiles/installations/zsh/install.sh""
-        "execute_script "$HOME/dotfiles/installations/oh-my-zsh/install.sh""
-        "execute_script "$HOME/dotfiles/installations/go/install.sh" "1.24.0""
-        "execute_script "$HOME/dotfiles/installations/fuse/install.sh""
-        "execute_script "$HOME/dotfiles/installations/gcsfuse/install.sh""
-        "execute_script "$HOME/dotfiles/installations/python3/install.sh""
-        "execute_script "$HOME/dotfiles/installations/tmux/install.sh""
-        "go run "$HOME/dotfiles/vscode/main.go""
-        "execute_script "$HOME/dotfiles/monitor/install.sh""
-        "bash "$HOME/dotfiles/installations/tools/add_script_to_executable.sh" "$HOME/dotfiles/setup.sh" "dotfiles_setup""
-        "bash "$HOME/dotfiles/installations/tools/add_script_to_executable.sh" "$HOME/dotfiles/vscode/vscode_symlink_creator.sh" "dotfiles_vscode_symlink_creator""
+        "$HOME/dotfiles/installations/zsh/install.sh"
+        "$HOME/dotfiles/installations/oh-my-zsh/install.sh"
+        "$HOME/dotfiles/installations/tmux/install.sh"
+        "$HOME/dotfiles/installations/go/install.sh 1.24.0"
+        "$HOME/dotfiles/installations/fuse/install.sh"
+        "$HOME/dotfiles/installations/gcsfuse/install.sh"
+        "$HOME/dotfiles/installations/python3/install.sh"
+        "go run $HOME/dotfiles/vscode/main.go"
+        "$HOME/dotfiles/monitor/install.sh"
+        "$HOME/dotfiles/installations/tools/add_script_to_executable.sh $HOME/dotfiles/setup.sh dotfiles_setup"
+        "$HOME/dotfiles/installations/tools/add_script_to_executable.sh $HOME/dotfiles/vscode_symlink_creator.sh dotfiles_vscode_symlink_creator"
     )
 
     log_debug "Choose the components to install:"
@@ -129,44 +95,46 @@ show_menu() {
     log_info "Following components will be installed:"
     echo "$chosen_options"
 
-    read -p "Proceed with installation? (y/n): " confirm
-    if [[ "$confirm" != "y" && "$confirm" != "Y" ]]; then
-        echo "Installation aborted."
-        exit 0
+    if gum confirm; then 
+        for option in $chosen_options; do
+            for i in "${!options[@]}"; do
+                if [ "${options[$i]}" == "$option" ]; then
+                    gum spin --spinner dot --show-error --title "Installing $option" -- ${commands[$i]}
+                    break
+                fi
+            done
+        done
+    fi
+}
+
+gum_installer() {
+    # Check if brew is installed
+    if ! command -v brew &> /dev/null
+    then
+        log_error "Brew is not installed. Installing Brew first."
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
     fi
 
-    for option in $chosen_options; do
-        for i in "${!options[@]}"; do
-            if [ "${options[$i]}" == "$option" ]; then
-                log_info "Running: ${options[$i]}"
-                eval "${commands[$i]}"
-                log_info "------------------"
-                break
-            fi
-        done
-    done
+    log_debug "Installing gum..."
+    /home/linuxbrew/.linuxbrew/bin/brew install gum
+    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+    log_info "Gum installation complete."
 }
 
 main(){
-    # Go to Home Dir
-    pushd "$HOME"
-
-    # Install gum
     gum_installer
+    # Go to Home Dir
+    CWD=$(pwd)
+    cd "$HOME"
 
     # Setup Git
     gum confirm "Install Github & Steup" && git_installer
-    gum confirm "Remove dotfiles and Install again" && (rm -rf $HOME/dotfiles && git clone https://github.com/meet2mky/dotfiles.git)
-    # Go to dotfiles repo
-    pushd "dotfiles"
-    
+    gum confirm "Remove dotfiles and Install again" && (rm -rf dotfiles && git clone https://github.com/meet2mky/dotfiles.git)
+    cd "dotfiles"
     show_menu
-
-    # Come out of dotfiles repo
-    popd
-
+    cd ..
     # Come out of Home Dir
-    popd
+    cd "$CWD"
     exec zsh
 }
 
