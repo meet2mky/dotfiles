@@ -91,23 +91,23 @@ gum_installer() {
 show_menu() {
     local options=(
         "zsh"
+        "oh-my-zsh"
         "go"
         "fuse"
         "gcsfuse"
-        "oh-my-zsh"
         "python3"
         "tmux"
-        "vscode"
-        "monitor"
+        "vscode_extensions"
+        "dotfile_monitor"
         "dotfiles_setup executable"
         "dotfiles_vscode_symlink_creator executable"
     )
     local commands=(
         "execute_script "$HOME/dotfiles/installations/zsh/install.sh""
+        "execute_script "$HOME/dotfiles/installations/oh-my-zsh/install.sh""
         "execute_script "$HOME/dotfiles/installations/go/install.sh" "1.24.0""
         "execute_script "$HOME/dotfiles/installations/fuse/install.sh""
         "execute_script "$HOME/dotfiles/installations/gcsfuse/install.sh""
-        "execute_script "$HOME/dotfiles/installations/oh-my-zsh/install.sh""
         "execute_script "$HOME/dotfiles/installations/python3/install.sh""
         "execute_script "$HOME/dotfiles/installations/tmux/install.sh""
         "go run "$HOME/dotfiles/vscode/main.go""
@@ -119,7 +119,7 @@ show_menu() {
     log_debug "Choose the components to install:"
     
     local chosen_options
-    chosen_options=$("$(go env GOPATH)/bin/gum" choose --no-limit "${options[@]}")
+    chosen_options=$(gum choose --no-limit "${options[@]}")
 
     if [ -z "$chosen_options" ]; then
         log_debug "No components selected. Aborting installation."
@@ -129,10 +129,9 @@ show_menu() {
     log_info "Following components will be installed:"
     echo "$chosen_options"
 
-    /home/mohitkyadav_google_com/go/bin/gum confirm "Proceed?"
-
-    if [[ $? -ne 0 ]]; then
-        log_debug "Aborting installation.."
+    read -p "Proceed with installation? (y/n): " confirm
+    if [[ "$confirm" != "y" && "$confirm" != "Y" ]]; then
+        echo "Installation aborted."
         exit 0
     fi
 
@@ -156,8 +155,8 @@ main(){
     gum_installer
 
     # Setup Git
-    /home/mohitkyadav_google_com/go/bin/gum confirm "Install Github & Steup" && git_installer
-    /home/mohitkyadav_google_com/go/bin/gum confirm "Remove dotfiles and Install again" && (rm -rf $HOME/dotfiles && git clone https://github.com/meet2mky/dotfiles.git)
+    gum confirm "Install Github & Steup" && git_installer
+    gum confirm "Remove dotfiles and Install again" && (rm -rf $HOME/dotfiles && git clone https://github.com/meet2mky/dotfiles.git)
     # Go to dotfiles repo
     pushd "dotfiles"
     
