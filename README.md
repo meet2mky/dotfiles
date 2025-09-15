@@ -8,7 +8,7 @@ Run the below command that should automate the git setup along with login and do
 
 
 ```bash
-wget -qO - https://raw.githubusercontent.com/meet2mky/dotfiles/master/setup.sh | bash
+wget -qO - https://raw.githubusercontent.com/meet2mky/dotfiles/master/setup.sh | bash -s "1.24.0"
 ```
 
 You are now successfully logged in to GitHub using the CLI and your web browser! Git commands that require authentication will now be able to access your GitHub repositories.

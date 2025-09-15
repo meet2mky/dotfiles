@@ -19,8 +19,6 @@ log_error() {
 # --- Configuration ---
 # Standard Go installation directory
 GO_ROOT_INSTALL_DIR="/usr/local/go"
-# Default location for Go projects/packages
-GOPATH_DEFAULT="$HOME/go"
 # Temporary download path
 DOWNLOAD_PATH="/tmp/go_installer_download.tar.gz" # Use a more specific tmp name
 
@@ -104,11 +102,11 @@ fi
 if [ -d "$GO_ROOT_INSTALL_DIR" ]; then
   log_debug "Removing existing Go installation at ${GO_ROOT_INSTALL_DIR}..."
   if sudo rm -rf "$GO_ROOT_INSTALL_DIR"; then
-     log_debug "Previous installation removed."
+    log_debug "Previous installation removed."
   else
-     log_error "Failed to remove existing Go installation. Check sudo permissions for ${GO_ROOT_INSTALL_DIR}."
-     # cleanup_download runs automatically via trap EXIT
-     exit 1
+    log_error "Failed to remove existing Go installation. Check sudo permissions for ${GO_ROOT_INSTALL_DIR}."
+    # cleanup_download runs automatically via trap EXIT
+    exit 1
   fi
 fi
 
@@ -152,7 +150,6 @@ EOF
 TEXT=${TEXT%x}
 
 bash "$HOME/dotfiles/installations/tools/block_manager.sh" "$FILE_PATH" "$START_MARKER" "$END_MARKER" "$TEXT"
-log_debug ""
 log_debug ""
 log_debug "----------------------------------------------------------"
 log_debug ""

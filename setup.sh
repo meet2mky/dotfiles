@@ -16,6 +16,12 @@ log_error() {
     echo "❌[ERR] $1"
 }
 
+if [[ $# -ne 1 ]]; then 
+    log_error "Required go verison for this script..."
+fi
+# Required go version.
+GO_VERSION="$1"
+
 present_command() {
     if command -v "$1" &> /dev/null; then
         return 0
@@ -59,7 +65,6 @@ show_menu() {
         "zsh"
         "oh-my-zsh"
         "tmux"
-        "go"
         "fuse"
         "gcsfuse"
         "python3"
@@ -72,7 +77,6 @@ show_menu() {
         "$HOME/dotfiles/installations/zsh/install.sh"
         "$HOME/dotfiles/installations/oh-my-zsh/install.sh"
         "$HOME/dotfiles/installations/tmux/install.sh"
-        "$HOME/dotfiles/installations/go/install.sh 1.24.0"
         "$HOME/dotfiles/installations/fuse/install.sh"
         "$HOME/dotfiles/installations/gcsfuse/install.sh"
         "$HOME/dotfiles/installations/python3/install.sh"
@@ -108,16 +112,11 @@ show_menu() {
 }
 
 gum_installer() {
-    # Check if brew is installed
-    if ! command -v brew &> /dev/null
-    then
-        log_error "Brew is not installed. Installing Brew first."
-        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    fi
+    # Check if go is installed
+    wget -qO - https://raw.githubusercontent.com/meet2mky/dotfiles/master/installations/go/install.sh | bash -s "$GO_VERSION"
 
-    log_debug "Installing gum..."
-    /home/linuxbrew/.linuxbrew/bin/brew install gum
-    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+    log_debug "Installing gum from source..."
+    go install github.com/charmbracelet/gum@latest
     log_info "Gum installation complete."
 }
 
