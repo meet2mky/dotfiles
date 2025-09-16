@@ -132,4 +132,4 @@ export PATH="/usr/local/go/bin:$PATH"
 GOPATH=$(go env GOPATH)/bin
 export PATH="$GOPATH:$PATH"
 log_debug ""
-go --version
+go version
