@@ -34,14 +34,14 @@ git_installer() {
     log_debug ""
     log_debug "Git Installation and configuration..."
     if present_command "git"; then
-        log_debug "Git is already installed, Installation and configuration skipped..."
-        return 0
+        log_debug "Git is already installed, Installation skipped..."
+    else
+        log_debug "Git is not detected on system. Installation and configuration started..."
+        sudo apt update >> /dev/null 2>&1 || true
+        sudo apt install git -y
+        log_debug "Checking git version..."
+        git --version
     fi
-    log_debug "Git is not detected on system. Installation and configuration started..."
-    sudo apt update >> /dev/null 2>&1 || true
-    sudo apt install git -y
-    log_debug "Checking git version..."
-    git --version
     log_debug ""
     log_debug ""
     log_debug "Installing Github CLI for login..."
