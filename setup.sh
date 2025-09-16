@@ -65,6 +65,7 @@ show_menu() {
         "zsh"
         "oh-my-zsh"
         "tmux"
+        "go"
         "fuse"
         "gcsfuse"
         "python3"
@@ -77,6 +78,7 @@ show_menu() {
         "$HOME/dotfiles/installations/zsh/install.sh"
         "$HOME/dotfiles/installations/oh-my-zsh/install.sh"
         "$HOME/dotfiles/installations/tmux/install.sh"
+        "$HOME/dotfiles/installations/go/install.sh $GO_VERSION"
         "$HOME/dotfiles/installations/fuse/install.sh"
         "$HOME/dotfiles/installations/gcsfuse/install.sh"
         "$HOME/dotfiles/installations/python3/install.sh"
@@ -112,9 +114,7 @@ show_menu() {
 }
 
 gum_installer() {
-    # Check if go is installed
-    wget -qO - https://raw.githubusercontent.com/meet2mky/dotfiles/master/installations/go/install.sh | bash -s "$GO_VERSION"
-
+    wget -qO - https://raw.githubusercontent.com/meet2mky/dotfiles/master/installations/go/go_raw_install.sh | bash -s "$GO_VERSION"
     log_debug "Installing gum from source..."
     go install github.com/charmbracelet/gum@latest
     log_info "Gum installation complete."
