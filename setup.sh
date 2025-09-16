@@ -116,6 +116,9 @@ show_menu() {
 gum_installer() {
     wget -qO - https://raw.githubusercontent.com/meet2mky/dotfiles/master/installations/go/go_raw_install.sh | bash -s "$GO_VERSION"
     log_debug "Installing gum from source..."
+    export PATH="/usr/local/go/bin:$PATH"
+    GOPATH=$(go env GOPATH)/bin
+    export PATH="$GOPATH:$PATH"
     go install github.com/charmbracelet/gum@latest
     log_info "Gum installation complete."
 }
