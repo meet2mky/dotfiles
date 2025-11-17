@@ -57,7 +57,12 @@ git_installer() {
     log_debug ""
     log_debug "Performing login to git using Github CLI..."
     log_debug "Authenticate using browser..."
-    yes | gh auth login --hostname github.com --git-protocol https --web
+    if gh auth login --hostname github.com --git-protocol https --web; then
+        log_info "Successfully Logged In."
+    else
+        log_error "Something went wrong."
+        exit 1
+    fi
 }
 
 show_menu() {
