@@ -43,6 +43,15 @@ git_installer() {
         git --version
     fi
     log_debug ""
+    log_debug "Configuring git user..."
+    local user_name
+    local user_email
+    user_name=$(gum input --placeholder "Enter your git user name")
+    user_email=$(gum input --placeholder "Enter your git user email")
+    git config --global user.name "$user_name"
+    git config --global user.email "$user_email"
+    log_info "Git user configured with name '$user_name' and email '$user_email'."
+    log_debug ""
     log_debug ""
     log_debug "Installing Github CLI for login..."
     if present_command "gh"; then
@@ -63,6 +72,7 @@ git_installer() {
         log_error "Something went wrong."
         exit 1
     fi
+    
 }
 
 show_menu() {
