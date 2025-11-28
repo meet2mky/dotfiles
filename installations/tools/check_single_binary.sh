@@ -67,8 +67,17 @@ log_debug "Checking for installations of '$binary_name' in PATH..."
 # into the 'locations' array.
 # The 'found_path' variable is implicitly created/used by 'read' here.
 while IFS= read -r found_path; do
-    # Add the extracted path to the locations array
-    locations+=("$found_path")
+    # Check if found_path is already in locations to ensure uniqueness
+    is_duplicate=false
+    for loc in "${locations[@]}"; do
+        if [[ "$loc" == "$found_path" ]]; then
+            is_duplicate=true
+            break
+        fi
+    done
+    if [[ "$is_duplicate" == "false" ]]; then
+        locations+=("$found_path")
+    fi
 done < <(type -a "$binary_name" 2>/dev/null | grep -E 'is .*[/]' | sed -e 's/.* is //')
 
 # --- Evaluate Count ---
