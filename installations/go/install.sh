@@ -118,24 +118,3 @@ ensure_single_bin "$GO_BINARY_NAME"
 log_debug "Checking command: [$GO_BINARY_NAME]..."
 check_command "$GO_BINARY_NAME"
 log_info "Command: [$GO_BINARY_NAME] is available for use ..."
-START_MARKER="# --- BEGIN GO ENV ---"
-END_MARKER="# --- END GO ENV ---"
-FILE_PATH="$HOME/.zshrc"
-TEXT=$(cat <<'EOF'
-
-add-to-path "/usr/local/go/bin"
-add-to-path "$(go env GOROOT)/bin"
-add-to-path "$(go env GOPATH)/bin"
-x
-EOF
-)
-# Remove the placeholder 'x' character, leaving the newlines intact
-TEXT=${TEXT%x}
-
-bash "$HOME/dotfiles/installations/tools/block_manager.sh" "$FILE_PATH" "$START_MARKER" "$END_MARKER" "$TEXT"
-log_debug ""
-log_debug "----------------------------------------------------------"
-log_debug ""
-
-# trap EXIT will handle final cleanup if needed
-exit 0
