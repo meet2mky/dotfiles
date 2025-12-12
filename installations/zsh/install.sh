@@ -3,14 +3,8 @@
 # Exit immediately if a command exits with a non-zero status/ encounters unset variable/ pipe failure.
 set -euo pipefail
 
-# --- Helper Functions ---
-log_info() {
-    echo "[INFO] $1"
-}
-
-log_error() {
-    echo "[ERROR] $1"
-}
+# shellcheck source=/dev/null
+source "$(dirname "${BASH_SOURCE[0]}")/../tools/all_in_one.sh"
 
 # --- Main Script ---
 log_info ""
@@ -20,7 +14,7 @@ log_info "Starting ZSH installation script..."
 # Check for sudo privileges upfront
 # Note: This script assumes Linux with apt, so sudo is likely needed.
 if ! sudo -v; then
-    log_error "❌ Cannot obtain sudo privileges. Please run using sudo or ensure sudo access."
+    log_error "Cannot obtain sudo privileges. Please run using sudo or ensure sudo access."
     exit 1
 fi
 
@@ -34,20 +28,19 @@ if command -v apt &>/dev/null; then
     log_info "ZSH installation done."
 else
     # This script currently only supports apt.
-    log_error "❌ apt package manager not found. This script only supports apt-based systems."
-    log_error "❌ Unable to install zsh."
+    log_error "apt package manager not found. This script only supports apt-based systems."
+    log_error "Unable to install zsh."
     exit 1
 fi
 
 # Verify if zsh command is available after installation attempt
 log_info "Verifying ZSH installation..."
 if ! command -v "zsh" &>/dev/null; then
-    log_error "❌ Command 'zsh' installation failed. Exiting..."
+    log_error "Command 'zsh' installation failed. Exiting..."
     exit 1
 fi
-log_info "✅ Verification successful: 'zsh' installation completed."
+log_info "Verification successful: 'zsh' installation completed."
 log_info "To make Zsh your default shell, you may need to run: chsh -s $(which zsh)"
 log_info "Zsh installation script finished."
 log_info ""
 log_info ""
-exit 0

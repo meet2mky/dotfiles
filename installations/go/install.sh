@@ -3,31 +3,14 @@
 # Exit immediately if a command exits with a non-zero status/ encounters unset variable/ pipe failure.
 set -euo pipefail
 
-# --- Helper Functions ---
-log_info() {
-    echo "✅[INF] $1"
-}
-
-log_debug() {
-    echo "🔍[DBG] $1"
-}
-
-log_error() {
-    echo "❌[ERR] $1"
-}
+# shellcheck source=/dev/null
+source "$(dirname "${BASH_SOURCE[0]}")/../tools/all_in_one.sh"
 
 # --- Configuration ---
 # Standard Go installation directory
 GO_ROOT_INSTALL_DIR="/usr/local/go"
 # Temporary download path
 DOWNLOAD_PATH="/tmp/go_installer_download.tar.gz" # Use a more specific tmp name
-
-check_command() {
-    if ! command -v "$1" &> /dev/null; then
-        log_error "Command '$1' not found. Please install it first."
-        exit 1
-    fi
-}
 
 print_usage() {
   log_debug "Usage: $0 <go_version>"
@@ -131,7 +114,7 @@ log_debug "------------------- Installation Summary -------------------"
 log_debug "-> Go ${GO_VERSION} installed to: ${GOROOT}"
 log_debug ""
 log_debug "Confirming single [$GO_BINARY_NAME] installation..."
-bash "$HOME/dotfiles/installations/tools/check_single_binary.sh" "$GO_BINARY_NAME"
+ensure_single_bin "$GO_BINARY_NAME"
 log_debug "Checking command: [$GO_BINARY_NAME]..."
 check_command "$GO_BINARY_NAME"
 log_info "Command: [$GO_BINARY_NAME] is available for use ..."

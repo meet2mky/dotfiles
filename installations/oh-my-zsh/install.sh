@@ -3,18 +3,9 @@
 # Exit immediately if a command exits with a non-zero status/ encounters unset variable/ pipe failure.
 set -euo pipefail
 
-# --- Helper Functions ---
-log_info() {
-    echo "✅[INF] $1"
-}
 
-log_debug() {
-    echo "🔍[DBG] $1"
-}
-
-log_error() {
-    echo "❌[ERR] $1"
-}
+# shellcheck source=/dev/null
+source "$(dirname "${BASH_SOURCE[0]}")/../tools/all_in_one.sh"
 
 # --- Main Script ---
 log_debug "Starting Oh My Zsh installation script..."
@@ -34,7 +25,7 @@ if [ -d "$OMZ_DIR" ]; then
     log_debug "Removing unwanted backup files..."
     rm $HOME/.zshrc.omz-uninstalled-*
 else
-  log_debug "No existing Oh My Zsh installation found. Continuing with installation..."
+    log_debug "No existing Oh My Zsh installation found. Continuing with installation..."
 fi
 log_debug "-------------------------------------------------------------------------"
 log_debug ""
@@ -65,4 +56,13 @@ log_debug "---------------------------------------------------------------------
 log_debug ""
 log_debug "Please close and reopen your terminal, or log out and back in, to start using Zsh with Oh My Zsh."
 
+TEXT=$(cat <<'EOF'
+
+source "$HOME/dotfiles/installations/oh-my-zsh/zshrc.sh"
+x
+EOF
+)
+# Remove the placeholder 'x' character, leaving the newlines intact
+TEXT=${TEXT%x}
+manage_block "$HOME/.zshrc" "# MARKER BEGIN MY ZSHRC ---" "# MARKER END MY ZSHRC ---" "$TEXT"
 exit 0

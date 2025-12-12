@@ -109,7 +109,7 @@
         {
             "label": "ZB PACKAGE",
             "type": "shell",
-            "command": "GODEBUG=asyncpreemptoff=1 CGO_ENABLED=0  go test ./tools/integration_tests/${input:TestPackage}/... -count=1 -v --integrationTest --zonal=true --testInstalledPackage=false --testbucket=mohitkyadav-zb-us-central1-a --timeout 60m",
+            "command": "GODEBUG=asyncpreemptoff=1 CGO_ENABLED=0  go test ./tools/integration_tests/${input:TestPackage}/... -count=1 -v --integrationTest --zonal=true --testInstalledPackage=false --testbucket=mohitkyadav-zonal-usw4a-a --timeout 60m",
             "options": {
                 "statusbar": {
                     "hide": false,
@@ -123,7 +123,7 @@
         {
             "label": "ZB SINGLE",
             "type": "shell",
-            "command": "GODEBUG=asyncpreemptoff=1 CGO_ENABLED=0  go test ./tools/integration_tests/${input:TestPackage}/... -count=1 -v --integrationTest --zonal=true --testInstalledPackage=false --testbucket=mohitkyadav-zb-us-central1-a --timeout 60m ${input:TestNameRegex}",
+            "command": "GODEBUG=asyncpreemptoff=1 CGO_ENABLED=0  go test ./tools/integration_tests/${input:TestPackage}/... -count=1 -v --integrationTest --zonal=true --testInstalledPackage=false --testbucket=mohitkyadav-zonal-usw4a-a --timeout 60m ${input:TestNameRegex}",
             "options": {
                 "statusbar": {
                     "hide": false,

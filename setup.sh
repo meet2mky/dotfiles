@@ -85,7 +85,6 @@ show_menu() {
         "gcsfuse"
         "python3"
         "vscode_extensions"
-        "dotfile_monitor"
         "dotfiles_setup executable"
         "dotfiles_vscode_symlink_creator executable"
     )
@@ -98,7 +97,6 @@ show_menu() {
         "$HOME/dotfiles/installations/gcsfuse/install.sh"
         "$HOME/dotfiles/installations/python3/install.sh"
         "go run $HOME/dotfiles/vscode/main.go"
-        "$HOME/dotfiles/monitor/install.sh"
         "$HOME/dotfiles/installations/tools/add_script_to_executable.sh $HOME/dotfiles/setup.sh dotfiles_setup"
         "$HOME/dotfiles/installations/tools/add_script_to_executable.sh $HOME/dotfiles/vscode_symlink_creator.sh dotfiles_vscode_symlink_creator"
     )
@@ -138,7 +136,29 @@ gum_installer() {
     log_info "Gum installation complete."
 }
 
+assert_pure_bash() {
+    # 1. Ensure BASH_VERSION is present (Must be Bash)
+    if [[ -z "${BASH_VERSION:-}" ]]; then
+        echo "❌ Error: This command requires Bash." >&2
+        exit 1
+    fi
+
+    # 2. Ensure ZSH is ABSENT (Must NOT be Zsh pretending to be Bash)
+    if [[ -n "${ZSH:-}" ]]; then
+        echo "❌ Error: Zsh detected. Please switch to pure Bash." >&2
+        exit 1
+    fi
+
+    # 3. Ensure TMUX is ABSENT (Must NOT be inside a multiplexer)
+    if [[ -n "${TMUX:-}" ]]; then
+        echo "❌ Error: Running inside Tmux. Please detach or exit Tmux first." >&2
+        exit 1
+    fi
+    
+}
+
 main(){
+    assert_pure_bash
     gum_installer
     # Go to Home Dir
     CWD=$(pwd)

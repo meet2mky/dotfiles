@@ -3,27 +3,14 @@
 # Exit immediately if a command exits with a non-zero status/ encounters unset variable/ pipe failure.
 set -euo pipefail
 
-# --- Helper Functions ---
-log_info() {
-    echo "[INFO] $1"
-}
-
-log_error() {
-    echo "[ERROR] $1"
-}
+# shellcheck source=/dev/null
+source "$(dirname "${BASH_SOURCE[0]}")/../tools/all_in_one.sh"
 
 # --- Configuration ---
 REPO_URL="https://github.com/GoogleCloudPlatform/gcsfuse.git"
 CLONE_DIR="gcsfuse_source"
 INSTALL_DIR="/usr/local/bin"
 GCSFUSE_BINARY_NAME="gcsfuse"
-
-check_command() {
-    if ! command -v "$1" &> /dev/null; then
-        log_error "Command '$1' not found. Please install it first."
-        exit 1
-    fi
-}
 
 # --- Core Functions ---
 
@@ -91,7 +78,7 @@ main() {
     log_info "Binary installed at: [$INSTALL_DIR/$GCSFUSE_BINARY_NAME]"
     log_info ""
     log_info "Confirming single [$GCSFUSE_BINARY_NAME] installation..."
-    bash "$HOME/dotfiles/installations/tools/check_single_binary.sh" "$GCSFUSE_BINARY_NAME"
+    ensure_single_bin "$GCSFUSE_BINARY_NAME"
     log_info "Checking command: [$GCSFUSE_BINARY_NAME]..."
     check_command "$GCSFUSE_BINARY_NAME"
     log_info "Command: [$GCSFUSE_BINARY_NAME] is available for use ..."

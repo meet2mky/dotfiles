@@ -1,117 +1,110 @@
 #!/bin/bash
 
-# Exit immediately if a command exits with a non-zero status/ encounters unset variable/ pipe failure.
-set -euo pipefail
-
-# --- Helper Functions ---
-log_info() {
-    echo "✅[INF] $1"
-}
-
-log_debug() {
-    echo "🔍[DBG] $1"
-}
-
-log_error() {
-    echo "❌[ERR] $1"
-}
-
-# A script to insert or update a text block defined by markers in a file.
-
-# --- Helper Function for Usage ---
-usage() {
-    echo "Usage: $0 FILE_PATH START_MARKER END_MARKER [ACTUAL_INSERT_OR_UPDATE_TEXT]"
-    exit 1
-}
-
-# -- Helper Function for removing consecutive empty lines.
-cleanup_empty_lines_awk() {
-    local file_path="$1"
-
-    if [[ -z "$file_path" ]]; then
-        log_error "No file path provided."
-        return 1
-    fi
-    if [[ ! -f "$file_path" ]]; then
-        log_error "File not found at '$file_path'."
-        return 1
-    fi
-
-    local temp_file
-    temp_file=$(mktemp)
-
-    # awk script to print only the first of consecutive empty lines
-    awk '!NF{if(c++<1)print} NF{c=0;print}' "$file_path" >"$temp_file"
-
-    mv "$temp_file" "$file_path"
-}
-
-# --- Argument Validation ---
-if [[ "$#" -lt 4 ]]; then
-    log_error "Invalid number of arguments."
-    usage
+# --- Header Guard ---
+if [[ -n "${BLOCK_MANAGER_SH_LOADED:-}" ]]; then
+    return 0
 fi
+BLOCK_MANAGER_SH_LOADED=1
 
-FILE_PATH="$1"
-START_MARKER="$2"
-END_MARKER="$3"
-ACTUAL_INSERT_TEXT="$4"
-
-# Validate that the file exists
-if [[ ! -f "$FILE_PATH" ]]; then
-    log_error "File not found at '$FILE_PATH'"
+# --- Source Guard ---
+if [[ "${BASH_SOURCE[0]:-}" == "${0:-}" ]]; then
+    echo "❌[ERR] This script must be sourced. Use: source block_manager.sh"
     exit 1
 fi
 
-# Validate that markers are single-line text
-if [[ "$START_MARKER" == *$'\n'* || "$END_MARKER" == *$'\n'* ]]; then
-    log_error "START_MARKER and END_MARKER must be single-line text."
-    exit 1
-fi
-
-# --- Main Operation Logic ---
-
-# Check for the presence of markers using grep (-F for fixed string, -q for quiet)
-start_found=$(
-    grep -qF -- "$START_MARKER" "$FILE_PATH"
-    echo $?
-)
-end_found=$(
-    grep -qF -- "$END_MARKER" "$FILE_PATH"
-    echo $?
-)
-log_debug "Removing existing block if found"
-
-if [[ $start_found -eq 0 && $end_found -eq 0 ]]; then
-    # Both markers found: remove the block including markers
-    # Escape special sed characters in markers to ensure they are treated literally
-    escaped_start=$(printf '%s\n' "$START_MARKER" | sed -e 's/[\\/&.*^$[]/\\&/g')
-    escaped_end=$(printf '%s\n' "$END_MARKER" | sed -e 's/[\\/&.*^$[]/\\&/g')
-
-    # Use sed to delete the lines from START_MARKER to END_MARKER
-    sed -i.bak "/$escaped_start/,/$escaped_end/d" "$FILE_PATH"
-    log_info "Block successfully removed from '$FILE_PATH'. Backup created: ${FILE_PATH}.bak"
-    # Cleanup empty lines to keep config tidy.
-    if ! cleanup_empty_lines_awk "$FILE_PATH"; then
-        log_error "Unable to cleanup empty lines."
-        exit 1
-    fi
-
-elif [[ $start_found -ne 0 && $end_found -ne 0 ]]; then
-    log_debug "Block not found. No action taken"
+# --- Dependency Loading ---
+# Automatically find and source loggers.sh from the same directory.
+# This ensures log_info, log_debug, and log_error are available.
+_CURRENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [[ -f "${_CURRENT_DIR}/loggers.sh" ]]; then
+    # shellcheck source=/dev/null
+    source "${_CURRENT_DIR}/loggers.sh"
 else
-    # Only one marker found: fail with an error
-    log_error "Inconsistent state. Only one of the two markers was found. Aborting."
-    exit 1
+    echo "❌ [ERR] Required dependency 'loggers.sh' not found in ${_CURRENT_DIR}"
+    return 1
 fi
 
 
-if [[ -z "$ACTUAL_INSERT_TEXT" ]]; then
-    log_error "ACTUAL_INSERT_TEXT cannot be empty for INSERT."
-    exit 1
-fi
+# --- Internal Helper Functions ---
 
-# Append the block to the end of the file
-printf "\n%s%s%s\n" "$START_MARKER" "$ACTUAL_INSERT_TEXT" "$END_MARKER" >>"$FILE_PATH"
-log_info "Block successfully inserted into '$FILE_PATH'."
-exit 0
+_is_empty() {
+    [[ -z "${1:-}" ]]
+}
+
+_check_line_exists() {
+    local line="$1"
+    local file="$2"
+    grep -qxF -- "$line" "$file"
+}
+
+_check_prefix() {
+    [[ "$1" == "$2"* ]]
+}
+
+# --- Main Function ---
+
+# Usage: manage_block <file_path> <start_marker> <end_marker> <content>
+manage_block() {
+    local file_path="${1:-}"
+    local start_marker="${2:-}"
+    local end_marker="${3:-}"
+    local content="${4:-}"
+
+    # 1. Validation
+    if [[ ! -f "$file_path" ]]; then
+        log_error "File not found: $file_path"
+        return 1
+    fi
+
+    if ! _check_prefix "$start_marker" "# MARKER BEGIN"; then
+        log_error "Start marker [$start_marker] must start with '# MARKER BEGIN'"
+        return 1
+    fi
+
+    if ! _check_prefix "$end_marker" "# MARKER END"; then
+        log_error "End marker [$end_marker] must start with '# MARKER END'"
+        return 1
+    fi
+
+    if _is_empty "$content"; then
+        log_error "Insert content cannot be empty."
+        return 1
+    fi
+
+    # 2. State Checking
+    local has_start=1
+    local has_end=1
+    _check_line_exists "$start_marker" "$file_path" || has_start=0
+    _check_line_exists "$end_marker" "$file_path" || has_end=0
+
+    # 3. Logic Branching
+    if (( has_start && has_end )); then
+        log_info "Updating existing block in '$file_path'..."
+        
+        # Escape markers for SED
+        local escaped_start escaped_end
+        escaped_start=$(printf '%s\n' "$start_marker" | sed -e 's/[\\/&.*^$[]/\\&/g')
+        escaped_end=$(printf '%s\n' "$end_marker" | sed -e 's/[\\/&.*^$[]/\\&/g')
+
+        # Create backup and delete existing range
+        sed -i.bak "/$escaped_start/,/$escaped_end/d" "$file_path"
+        
+        # Append new block
+        printf "\n%s\n%s\n%s\n" "$start_marker" "$content" "$end_marker" >> "$file_path"
+        log_info "Block updated. Backup: ${file_path}.bak"
+
+    elif (( !has_start && !has_end )); then
+        log_info "Inserting new block into '$file_path'..."
+        printf "\n%s\n%s\n%s\n" "$start_marker" "$content" "$end_marker" >> "$file_path"
+        log_info "Block inserted successfully."
+
+    else
+        log_error "Inconsistent state in '$file_path':"
+        [[ $has_start -eq 1 ]] && log_error " -> Found start marker but missing end marker."
+        [[ $has_end -eq 1 ]] && log_error " -> Found end marker but missing start marker."
+        return 1
+    fi
+}
+
+# Clean up internal variables
+unset _CURRENT_DIR

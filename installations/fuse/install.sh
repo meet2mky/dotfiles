@@ -3,26 +3,8 @@
 # Exit immediately if a command exits with a non-zero status/ encounters unset variable/ pipe failure.
 set -euo pipefail
 
-# --- Helper Functions ---
-log_info() {
-    echo "✅[INF] $1"
-}
-
-log_debug() {
-    echo "🔍[DBG] $1"
-}
-
-log_error() {
-    echo "❌[ERR] $1"
-}
-
-
-check_command() {
-    if ! command -v "$1" &> /dev/null; then
-        log_error "Command '$1' not found. Please install it first."
-        exit 1
-    fi
-}
+# shellcheck source=/dev/null
+source "$(dirname "${BASH_SOURCE[0]}")/../tools/all_in_one.sh"
 
 check_fuse_version_linux() {
     log_debug "Attempting to check installed FUSE version..."
@@ -30,10 +12,10 @@ check_fuse_version_linux() {
   
     # Try FUSE 2 command if FUSE 3 not found or version flag failed
     if command -v fusermount >/dev/null 2>&1; then
-         # Try --version first, then -V
+        # Try --version first, then -V
         if fuse_version=$(fusermount --version 2>&1); then
-             log_debug "Detected FUSE 2 version: ${fuse_version}"
-             return 0
+            log_debug "Detected FUSE 2 version: ${fuse_version}"
+            return 0
         elif fuse_version=$(fusermount -V 2>&1); then
             log_debug "Detected FUSE 2 version: ${fuse_version}"
             return 0
@@ -47,17 +29,17 @@ check_fuse_version_linux() {
             log_debug "Detected FUSE 3 version: ${fuse_version}"
             return 0
         elif fuse_version=$(fusermount3 -V 2>&1); then
-             log_debug "Detected FUSE 3 version: ${fuse_version}"
-             return 0
+            log_debug "Detected FUSE 3 version: ${fuse_version}"
+            return 0
         fi
     fi
 
     # If commands exist but version flags failed (unlikely for both)
     if command -v fusermount3 >/dev/null 2>&1 || command -v fusermount >/dev/null 2>&1; then
-       log_error "Could not determine FUSE version using standard flags (-V/--version)."
-       log_error "However, a fusermount executable was found."
+        log_error "Could not determine FUSE version using standard flags (-V/--version)."
+        log_error "However, a fusermount executable was found."
     else
-       log_error "Neither fusermount3 nor fusermount command found after installation attempt."
+        log_error "Neither fusermount3 nor fusermount command found after installation attempt."
     fi
     return 1 # Indicate version check wasn't fully successful
 }
@@ -133,9 +115,9 @@ elif [[ "$(uname -s)" == "Darwin" ]]; then
       log_debug "Found macFUSE version ${macfuse_version} installed (via pkgutil)."
       macfuse_installed=true
   elif pkgutil --pkg-info com.github.osxfuse.pkg.Core >/dev/null 2>&1; then # Check older ID if needed
-       macfuse_version=$(pkgutil --pkg-info com.github.osxfuse.pkg.Core | grep '^version:' | awk '{print $2}')
-       log_debug "Found osxfuse (older macFUSE) version ${macfuse_version} installed (via pkgutil)."
-       macfuse_installed=true
+      macfuse_version=$(pkgutil --pkg-info com.github.osxfuse.pkg.Core | grep '^version:' | awk '{print $2}')
+      log_debug "Found osxfuse (older macFUSE) version ${macfuse_version} installed (via pkgutil)."
+      macfuse_installed=true
   fi
 
   # Optionally suggest brew check if brew is installed
