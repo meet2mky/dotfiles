@@ -1,30 +1,10 @@
 #!/bin/bash
 
-# Exit immediately if a command exits with a non-zero status.
-set -e
-# Treat unset variables as an error when substituting.
-set -u
-# Pipe failures should cause the script to exit.
-set -o pipefail
+# Exit immediately if a command exits with a non-zero status/ encounters unset variable/ pipe failure.
+set -euo pipefail
 
-# --- Helper Functions ---
-log_info() {
-    echo "[INFO] $1"
-}
+# shellcheck source=/dev/null
+source "$(dirname "${BASH_SOURCE[0]}")/../installations/tools/all_in_one.sh"
 
-log_error() {
-    echo "[ERROR] $1" >&2
-}
-
-check_command() {
-    if ! command -v "$1" &> /dev/null; then
-        log_error "Command '$1' not found. Please install it first."
-        exit 1
-    fi
-}
-
-ACTUAL_LINK="$HOME/dotfiles/vscode/.vscode"
-SYMLINK=".vscode"
-
-bash "$HOME/dotfiles/installations/tools/create_symlink.sh" "$ACTUAL_LINK" $SYMLINK
+create_symlink "$HOME/dotfiles/vscode/.vscode" ".vscode"
 
